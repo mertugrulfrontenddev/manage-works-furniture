@@ -134,7 +134,7 @@ function LotForm() {
 
     return (
         <Container className="mt-5">
-            <h2 className="mb-4">Yeni Lot Ekle</h2>
+            <h2 className="mb-4">İş Emri Ekle</h2>
             <Row className="justify-content-center">
                 <Col md={6} sm={8} xs={10}>
                     <Form onSubmit={handleSubmit}>
@@ -200,7 +200,7 @@ function LotForm() {
                             />
                         </Form.Group>
 
-                        <Button variant="primary" type="submit">Lot Ekle</Button>
+                        <Button variant="primary" type="submit">İş Emri Ekle</Button>
                     </Form>
                 </Col>
             </Row>
