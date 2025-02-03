@@ -3,7 +3,7 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { LotContext } from "../context/LotContext";
 
 function LotForm() {
-  /*   localStorage.clear(); */
+   localStorage.clear();
     const { addLot } = useContext(LotContext);  // LotContext'ten addLot fonksiyonunu alıyoruz
 
     // Ürün listesi
