@@ -13,9 +13,9 @@ function LotList()
 
         <Container>
 
-            <h1 className="mt-4"> Lot Listesi</h1>
+            <h1 className="mt-4"> İş Emri Listesi</h1>
             {lots.length===0 ? (
-                <p className="text-muted"> Henüz bir lot eklenmedi</p>
+                <p className="text-muted"> Henüz bir iş eklenmedi</p>
             ):(
              <Row className="mt-3">
 
