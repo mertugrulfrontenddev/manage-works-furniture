@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import { LotContext } from "../context/LotContext";
-
+import { Link } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 function LotList()
 {
@@ -15,7 +15,9 @@ function LotList()
 
             <h1 className="mt-4"> İş Emri Listesi</h1>
             {lots.length===0 ? (
-                <p className="text-muted"> Henüz bir iş eklenmedi</p>
+                <div><p className="text-muted"> Henüz bir iş eklenmedi. İş Emri eklemek için </p>  <Link className="nav-link" to="/lotform">TIKLAYINIZ...</Link>  {/* Link to Lot Form */}</div>
+                
+                
             ):(
              <Row className="mt-3">
 

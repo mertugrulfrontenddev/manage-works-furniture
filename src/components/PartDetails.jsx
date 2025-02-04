@@ -11,7 +11,7 @@ function PartDetails() {
   };
 
   return (
-    <Container>
+    <Container className="mt-4">
       {lots.map((lot) => {
         const product = products.find((p) => p.code === lot.productCode);
 
@@ -19,6 +19,7 @@ function PartDetails() {
           <Card key={lot.lotNumber} className="mb-3 p-3">
             <Row>
               <Col md={3}>
+              <p><strong>Ürün Kodu:</strong> {lot.productCode}</p>
                 <p><strong>Ürün Adı:</strong> {lot.productName}</p>
                 <p><strong>Lot No:</strong> {lot.lotNumber}</p>
                 <p><strong>Adet:</strong> {lot.quantity}</p>
