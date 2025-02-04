@@ -98,7 +98,7 @@ function LotForm() {
                                 <option value="">Ürün kodu seçin</option>
                                 {products.map((product) => (
                                     <option key={product.code} value={product.code}>
-                                        {product.code}
+                                        {product.code + "-"  +product.name}
                                     </option>
                                 ))}
                             </Form.Control>
