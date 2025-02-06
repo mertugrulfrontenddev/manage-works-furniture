@@ -15,8 +15,6 @@ function LotForm() {
     lotNumber: 1,
   });
 
-  /* localStorage.clear();  */
-
   const [lots, setLots] = useState([]); // Firebase'deki tüm lotları tutmak için state
 
   // Firebase'den en son lot numarasını al
