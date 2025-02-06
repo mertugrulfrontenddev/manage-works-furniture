@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { db } from "../firebase"; // Firebase'den db import
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 
 function LotForm() {
@@ -14,6 +14,10 @@ function LotForm() {
     status: "Üretimde",
     lotNumber: 1,
   });
+
+  /* localStorage.clear();  */
+
+  const [lots, setLots] = useState([]); // Firebase'deki tüm lotları tutmak için state
 
   // Firebase'den en son lot numarasını al
   const getLastLotNumber = async () => {
@@ -42,6 +46,16 @@ function LotForm() {
       lotNumber: newLotNumber, // Yeni lot numarasını state'e ekle
     }));
   };
+
+  // Firebase'deki lotları dinle
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "lots"), (snapshot) => {
+      const lotData = snapshot.docs.map((doc) => doc.data());
+      setLots(lotData); // Firebase'deki tüm lot verilerini state'e güncelle
+    });
+
+    return () => unsubscribe(); // Cleanup
+  }, []);
 
   // Sayfa yüklendiğinde initial lot numarasını ayarlıyoruz
   useEffect(() => {
@@ -178,6 +192,18 @@ function LotForm() {
           </Form>
         </Col>
       </Row>
+
+      <div>
+        <h3>Mevcut İş Emirleri</h3>
+        <ul>
+          {lots.map((lot, index) => (
+            <li key={index}>
+              Lot No: {lot.lotNumber} | Ürün Kodu: {lot.productCode} | Ürün Adı:{" "}
+              {lot.productName} | Adet: {lot.quantity} | Durum: {lot.status}
+            </li>
+          ))}
+        </ul>
+      </div>
     </Container>
   );
 }
