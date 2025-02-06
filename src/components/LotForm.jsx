@@ -1,68 +1,85 @@
 import { useState, useEffect, useContext } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { db } from "../firebase"; // Firebase'den db import
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 
 function LotForm() {
-  /* localStorage.clear(); */
-  const { addLot, products } = useContext(LotContext); // LotContext'ten addLot fonksiyonunu alıyoruz
-
-  // Ürün listesi
+  const { addLot, products } = useContext(LotContext); // Context'ten addLot fonksiyonu
 
   const [formData, setFormData] = useState({
-    productCode: "", // Ürün kodunu state'leyeceğiz
+    productCode: "",
     productName: "",
     quantity: "",
     status: "Üretimde",
     lotNumber: 1,
   });
 
-  // LocalStorage'dan mevcut lot numarasını al
-  useEffect(() => {
-    const storedLotNumber = localStorage.getItem("lotNumber");
-    if (storedLotNumber) {
-      setFormData((prevData) => ({
-        ...prevData,
-        lotNumber: parseInt(storedLotNumber),
-      }));
+  // Firebase'den en son lot numarasını al
+  const getLastLotNumber = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "lots"));
+      let maxLotNumber = 0; // Başlangıç değeri 0 olmalı, çünkü daha önce hiç veri yoksa sıfırdan başlamalı
+      querySnapshot.forEach((doc) => {
+        const lotData = doc.data();
+        if (lotData.lotNumber > maxLotNumber) {
+          maxLotNumber = lotData.lotNumber;
+        }
+      });
+      return maxLotNumber;
+    } catch (error) {
+      console.error("Error getting documents: ", error);
+      return 0; // Eğer hata oluşursa sıfır döndür
     }
-  }, []);
+  };
+
+  // Sayfa yüklendiğinde lot numarasını kontrol et ve state'i güncelle
+  const setInitialLotNumber = async () => {
+    const lastLotNumber = await getLastLotNumber();
+    const newLotNumber = lastLotNumber + 1; // Firebase'deki son numaradan 1 fazla
+    setFormData((prevData) => ({
+      ...prevData,
+      lotNumber: newLotNumber, // Yeni lot numarasını state'e ekle
+    }));
+  };
+
+  // Sayfa yüklendiğinde initial lot numarasını ayarlıyoruz
+  useEffect(() => {
+    setInitialLotNumber();
+  }, []); // useEffect sadece bir kez çalışacak, çünkü [] dependenstları boş
 
   // Yeni lot eklerken
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Yeni lot numarasını güncelle ve sakla
-    const newLotNumber = formData.lotNumber + 1;
-    localStorage.setItem("lotNumber", newLotNumber);
+    // Firebase'den mevcut lot numarasını al
+    const lastLotNumber = await getLastLotNumber();
+    const newLotNumber = lastLotNumber + 1; // Yeni lot numarasını artır
 
-    // Yeni lotu oluştur
+    // Yeni lot objesini oluştur
     const newLot = {
-      lotNumber: formData.lotNumber,
-      productCode: formData.productCode, // Ürün kodunu da ekliyoruz
+      lotNumber: newLotNumber,
+      productCode: formData.productCode,
       productName: formData.productName,
       quantity: formData.quantity,
       status: formData.status,
     };
 
-    // Yeni lotu context'e ekle
-    addLot(newLot);
-
-    const existingLots = JSON.parse(localStorage.getItem("lots")) || []; // Eğer daha önce lotlar varsa onları al, yoksa boş bir dizi oluştur
-
-    // Yeni lotu mevcut lotların listesine ekle
-    existingLots.push(newLot);
-
-    // Yeni lotları localStorage'a kaydet
-    localStorage.setItem("lots", JSON.stringify(existingLots));
-
-    // Form verilerini sıfırla
-    setFormData({
-      productCode: "", // Ürün kodunu sıfırlıyoruz
-      productName: "",
-      quantity: "",
-      status: "Üretimde",
-      lotNumber: newLotNumber,
-    });
+    // Yeni lotu Firebase'e kaydet
+    try {
+      await addDoc(collection(db, "lots"), newLot); // "lots" koleksiyonuna veri ekle
+      console.log("New lot added with lotNumber: ", newLotNumber);
+      setFormData({
+        productCode: "",
+        productName: "",
+        quantity: "",
+        status: "Üretimde",
+        lotNumber: newLotNumber, // Yeni lot numarasını state'e güncelle
+      });
+      setInitialLotNumber(); // Ekleme sonrası güncel lot numarasını al
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   // Ürün kodu değiştiğinde ürün adını otomatik olarak güncelle
@@ -75,7 +92,7 @@ function LotForm() {
     setFormData((prevData) => ({
       ...prevData,
       productCode: selectedCode,
-      productName: selectedProduct ? selectedProduct.name : "", // Ürün adı boşsa sıfırlanır
+      productName: selectedProduct ? selectedProduct.name : "",
     }));
   };
 
@@ -94,7 +111,6 @@ function LotForm() {
       <Row className="justify-content-center">
         <Col md={6} sm={8} xs={10}>
           <Form onSubmit={handleSubmit}>
-            {/* Ürün Kodu Seçimi (Dropdown) */}
             <Form.Group className="mb-3" controlId="formProductCode">
               <Form.Label>Ürün Kodu</Form.Label>
               <Form.Control
@@ -112,14 +128,13 @@ function LotForm() {
               </Form.Control>
             </Form.Group>
 
-            {/* Ürün Adı Seçimi (Bu, ürün kodu seçildikten sonra otomatik gelir) */}
             <Form.Group className="mb-3" controlId="formProductName">
               <Form.Label>Ürün Adı</Form.Label>
               <Form.Control
                 type="text"
                 name="productName"
                 value={formData.productName}
-                disabled // Bu alan sadece görüntüleme amaçlı olacak
+                disabled
               />
             </Form.Group>
 
@@ -131,6 +146,7 @@ function LotForm() {
                 value={formData.quantity}
                 onChange={handleInputChange}
                 placeholder="Adet girin"
+                required
               />
             </Form.Group>
 
