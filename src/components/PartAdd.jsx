@@ -10,7 +10,7 @@ const AddPartForm = () => {
     productCode: "",
     productName: "",
     partName: "",
-    paketNo: "",
+    paketNo: "", // Now this is a select field
     cinsi: "",
     thickness: "",
     unitCount: "",
@@ -21,8 +21,8 @@ const AddPartForm = () => {
       macmazzeWidth: "",
     },
     pvcColor: "",
-    edgeBanding: { eBanding: false },
-    drilling: { sevenKafa: false },
+    edgeBanding: "", // Now this will store "K Bandlama", "B Bandlama", or "E Kenar"
+    drilling: "", // Directly select drilling type (7kafa, Nanxing 1, Nanxing 2, Uniteam)
     channel: { length: "", width: "" },
     partSize: { length: "", width: "" },
     notes: "",
@@ -77,8 +77,8 @@ const AddPartForm = () => {
         materialColor: "",
         macmazzeNet: { macmazzeLenght: "", macmazzeWidth: "" },
         pvcColor: "",
-        edgeBanding: { eBanding: false },
-        drilling: { sevenKafa: false },
+        edgeBanding: "",
+        drilling: "", // Reset the drilling field as well
         channel: { length: "", width: "" },
         partSize: { length: "", width: "" },
         notes: "",
@@ -127,11 +127,24 @@ const AddPartForm = () => {
             <Form.Group>
               <Form.Label>Paket Nosu</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="paketNo"
                 value={part.paketNo}
                 onChange={handleChange}
-              />
+                required
+              >
+                <option value="">Paket No Seçiniz</option>
+                <option value="1/1">1/1</option>
+                <option value="3/1">3/1</option>
+                <option value="3/2">3/2</option>
+                <option value="4/1">4/1</option>
+                <option value="4/2">4/2</option>
+                <option value="4/3">4/3</option>
+                <option value="5/1">5/1</option>
+                <option value="5/2">5/2</option>
+                <option value="5/3">5/3</option>
+                <option value="5/4">5/4</option>
+              </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Label>Cinsi</Form.Label>
@@ -175,14 +188,14 @@ const AddPartForm = () => {
             <Form.Group>
               <Form.Label>Macmazze Net</Form.Label>
               <br />
-              <Form.Label>Lenght:</Form.Label>
+              <Form.Label>Boy:</Form.Label>
               <Form.Control
                 type="text"
                 name="macmazzeLenght"
                 value={part.macmazzeNet.macmazzeLenght}
                 onChange={(e) => handleNestedChange(e, "macmazzeNet")}
               />
-              <Form.Label>Width:</Form.Label>
+              <Form.Label>Genişlik:</Form.Label>
               <Form.Control
                 type="text"
                 name="macmazzeWidth"
@@ -202,17 +215,86 @@ const AddPartForm = () => {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Check
-                type="checkbox"
-                label="Edge Banding"
-                name="eBanding"
-                checked={part.edgeBanding.eBanding}
-                onChange={(e) =>
-                  setPart((prev) => ({
-                    ...prev,
-                    edgeBanding: { eBanding: e.target.checked },
-                  }))
-                }
+              <Form.Label>Bantlama</Form.Label>
+              <Form.Control
+                as="select"
+                name="edgeBanding"
+                value={part.edgeBanding}
+                onChange={handleChange}
+              >
+                <option value="">Seçiniz</option>
+                <option value="K Bandlama">K Bandlama</option>
+                <option value="B Bandlama">B Bandlama</option>
+                <option value="E Kenar">E Kenar</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Delik</Form.Label>
+              <Form.Control
+                as="select"
+                name="drilling"
+                value={part.drilling}
+                onChange={handleChange}
+              >
+                <option value="">Seçiniz</option>
+                <option value="7kafa">7kafa</option>
+                <option value="Nanxing 1">Nanxing 1</option>
+                <option value="Nanxing 2">Nanxing 2</option>
+                <option value="Uniteam">Uniteam</option>
+              </Form.Control>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row className="mt-3">
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label>Kanal Boy:</Form.Label>
+              <Form.Control
+                type="text"
+                name="length"
+                value={part.channel.length}
+                onChange={(e) => handleNestedChange(e, "channel")}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Kanal Genişlik</Form.Label>
+              <Form.Control
+                type="text"
+                name="width"
+                value={part.channel.width}
+                onChange={(e) => handleNestedChange(e, "channel")}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label> Parça Ölçüsü</Form.Label> <br />
+              <Form.Label> Boy</Form.Label>
+              <Form.Control
+                type="text"
+                name="length"
+                value={part.partSize.length}
+                onChange={(e) => handleNestedChange(e, "partSize")}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Genişlik</Form.Label>
+              <Form.Control
+                type="text"
+                name="width"
+                value={part.partSize.width}
+                onChange={(e) => handleNestedChange(e, "partSize")}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group>
+              <Form.Label>Açıklama</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="notes"
+                value={part.notes}
+                onChange={handleChange}
               />
             </Form.Group>
           </Col>
