@@ -1,7 +1,14 @@
 import { useState, useEffect, useContext } from "react";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { db } from "../firebase"; // Firebase'den db import
-import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 
 function LotForm() {
@@ -45,9 +52,10 @@ function LotForm() {
     }));
   };
 
-  // Firebase'deki lotları dinle
+  // Firebase'deki lotları dinle ve sıralama ekle
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "lots"), (snapshot) => {
+    const q = query(collection(db, "lots"), orderBy("lotNumber")); // "lotNumber" ile sıralama yap
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const lotData = snapshot.docs.map((doc) => doc.data());
       setLots(lotData); // Firebase'deki tüm lot verilerini state'e güncelle
     });
@@ -191,17 +199,28 @@ function LotForm() {
         </Col>
       </Row>
 
-      <div>
+      {/*  <div>
         <h3>Mevcut İş Emirleri</h3>
-        <ul>
+        <Row className="mt-3">
           {lots.map((lot, index) => (
-            <li key={index}>
-              Lot No: {lot.lotNumber} | Ürün Kodu: {lot.productCode} | Ürün Adı:{" "}
-              {lot.productName} | Adet: {lot.quantity} | Durum: {lot.status}
-            </li>
+            <Col key={index} md={4} sm={6} xs={12} className="mb-4">
+              <Card>
+                <Card.Body>
+                  <Card.Title>Lot No: {lot.lotNumber}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {lot.productCode}
+                  </Card.Subtitle>
+                  <Card.Text>
+                    <strong>Ürün Adı:</strong> {lot.productName} <br />
+                    <strong>Adet:</strong> {lot.quantity} <br />
+                    <strong>Durum:</strong> {lot.status}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
           ))}
-        </ul>
-      </div>
+        </Row>
+      </div> */}
     </Container>
   );
 }

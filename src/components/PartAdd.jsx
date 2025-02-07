@@ -1,9 +1,11 @@
 import { useState, useContext } from "react";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { LotContext } from "../context/LotContext";
+import { db } from "../firebase"; // Import Firestore
+import { doc, collection, addDoc } from "firebase/firestore";
 
 const AddPartForm = () => {
-  const { addPart, products } = useContext(LotContext);
+  const { products } = useContext(LotContext);
   const [part, setPart] = useState({
     productCode: "",
     productName: "",
@@ -16,7 +18,7 @@ const AddPartForm = () => {
     materialColor: "",
     macmazzeNet: {
       macmazzeLenght: "",
-      macmazzewidth: "",
+      macmazzeWidth: "",
     },
     pvcColor: "",
     edgeBanding: { eBanding: false },
@@ -28,7 +30,6 @@ const AddPartForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setPart((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -49,57 +50,43 @@ const AddPartForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Part'ı context üzerinden ekle
-    addPart(part, part.productCode);
-
-    // localStorage'a kaydetme
-    const storedProducts = JSON.parse(localStorage.getItem("products")) || [];
-
-    // Ürünü bul veya yeni bir ürün oluştur
-    const existingProductIndex = storedProducts.findIndex(
-      (p) => p.code === part.productCode
-    );
-
-    if (existingProductIndex >= 0) {
-      // Eğer ürün zaten varsa, sadece parçayı ekle
-      storedProducts[existingProductIndex].parts.push(part);
-    } else {
-      // Eğer ürün yoksa, yeni bir ürün oluştur ve parçayı ekle
-      storedProducts.push({
-        code: part.productCode,
-        name: part.productName,
-        parts: [part], // Parçayı yeni ürüne ekle
-      });
+    if (!part.productCode) {
+      alert("Lütfen bir ürün seçin.");
+      return;
     }
 
-    // Güncellenmiş veriyi localStorage'a kaydet
-    localStorage.setItem("products", JSON.stringify(storedProducts));
+    try {
+      const productRef = doc(db, "products", part.productCode); // Get product document reference
+      const partsCollectionRef = collection(productRef, "parts"); // Subcollection for parts
 
-    // Formu sıfırlama
-    setPart({
-      productCode: "",
-      productName: "",
-      partName: "",
-      paketNo: "",
-      cinsi: "",
-      thickness: "",
-      unitCount: "",
-      totalCount: "",
-      materialColor: "",
-      macmazzeNet: {
-        macmazzeLenght: "",
-        macmazzeWidth: "",
-      },
-      pvcColor: "",
-      edgeBanding: { eBanding: false },
-      drilling: { sevenKafa: false },
-      channel: { length: "", width: "" },
-      partSize: { length: "", width: "" },
-      notes: "",
-    });
+      await addDoc(partsCollectionRef, part); // Add part to Firestore
+
+      alert("Parça başarıyla eklendi!");
+      setPart({
+        productCode: "",
+        productName: "",
+        partName: "",
+        paketNo: "",
+        cinsi: "",
+        thickness: "",
+        unitCount: "",
+        totalCount: "",
+        materialColor: "",
+        macmazzeNet: { macmazzeLenght: "", macmazzeWidth: "" },
+        pvcColor: "",
+        edgeBanding: { eBanding: false },
+        drilling: { sevenKafa: false },
+        channel: { length: "", width: "" },
+        partSize: { length: "", width: "" },
+        notes: "",
+      });
+    } catch (error) {
+      console.error("Parça eklenirken hata oluştu: ", error);
+      alert("Parça eklenirken hata oluştu!");
+    }
   };
 
   return (
@@ -192,15 +179,15 @@ const AddPartForm = () => {
               <Form.Control
                 type="text"
                 name="macmazzeLenght"
-                value={part.macmazzeNet.length}
-                onChange={handleNestedChange}
+                value={part.macmazzeNet.macmazzeLenght}
+                onChange={(e) => handleNestedChange(e, "macmazzeNet")}
               />
               <Form.Label>Width:</Form.Label>
               <Form.Control
                 type="text"
                 name="macmazzeWidth"
-                value={part.macmazzeNet.width}
-                onChange={handleNestedChange}
+                value={part.macmazzeNet.macmazzeWidth}
+                onChange={(e) => handleNestedChange(e, "macmazzeNet")}
               />
             </Form.Group>
           </Col>
@@ -220,7 +207,12 @@ const AddPartForm = () => {
                 label="Edge Banding"
                 name="eBanding"
                 checked={part.edgeBanding.eBanding}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setPart((prev) => ({
+                    ...prev,
+                    edgeBanding: { eBanding: e.target.checked },
+                  }))
+                }
               />
             </Form.Group>
           </Col>

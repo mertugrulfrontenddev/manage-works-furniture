@@ -1,34 +1,39 @@
 import { useContext, useEffect, useState } from "react";
-import { LotContext } from "../context/LotContext";
-import { Link } from "react-router-dom";
+import { db } from "../firebase"; // Firebase bağlantısını içe aktarıyoruz
+import { collection, getDocs, orderBy, query } from "firebase/firestore"; // Firestore fonksiyonları
 import { Container, Row, Col, Card } from "react-bootstrap";
 
 function LotList() {
-  const { lots } = useContext(LotContext); // Context'ten gelen lotlar
-  const [myLots, setMyLots] = useState([]); // localStorage'dan alınan lotları tutacak state
+  const [myLots, setMyLots] = useState([]); // Firestore'dan gelen lotları tutacak state
 
-  // Sayfa yüklendiğinde localStorage'dan veriyi almak ve state'e kaydetmek
   useEffect(() => {
-    const storedLots = JSON.parse(localStorage.getItem("lots")) || []; // localStorage'dan veriyi al, yoksa boş dizi
-    setMyLots(storedLots); // Veriyi state'e kaydet
-  }, []); // Boş bağımlılık dizisi ile sadece bir kere çalışmasını sağlıyoruz (sayfa yüklenince)
+    const fetchLots = async () => {
+      try {
+        const lotsCollection = collection(db, "lots"); // "lots" koleksiyonuna referans al
+        const q = query(lotsCollection, orderBy("lotNumber")); // "lotNumber" ile sıralama yap
+        const snapshot = await getDocs(q); // Firestore'dan verileri al
+        const lotsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })); // Verileri diziye çevir
+        setMyLots(lotsData); // State'i güncelle
+      } catch (error) {
+        console.error("Veri çekme hatası:", error);
+      }
+    };
+
+    fetchLots();
+  }, []); // Bileşen yüklendiğinde sadece bir kez çalışacak
 
   return (
     <Container>
       <h1 className="mt-4">İş Emri Listesi</h1>
       {myLots.length === 0 ? (
-        <div>
-          <p className="text-muted">
-            Henüz bir iş eklenmedi. İş Emri eklemek için
-          </p>
-          <Link className="nav-link" to="/lotform">
-            TIKLAYINIZ...
-          </Link>
-        </div>
+        <p className="text-muted">Henüz bir iş eklenmedi.</p>
       ) : (
         <Row className="mt-3">
           {myLots.map((lot) => (
-            <Col key={lot.lotNumber} md={4} sm={6} xs={12} className="mb-4">
+            <Col key={lot.id} md={4} sm={6} xs={12} className="mb-4">
               <Card>
                 <Card.Body>
                   <Card.Title>Lot No: {lot.lotNumber}</Card.Title>
