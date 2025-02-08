@@ -60,12 +60,18 @@ const Banding = () => {
 
   // Bantlama türüne göre filtreleme
   const filteredProducts = selectedBanding
-    ? productsWithLots.filter((product) =>
-        product.lots.some((lot) =>
-          lot.parts.some((part) => part.banding === selectedBanding)
-        )
-      )
-    : productsWithLots;
+    ? productsWithLots.map((product) => {
+        const filteredLots = product.lots.map((lot) => {
+          // Part bazında filtreleme
+          const filteredParts = lot.parts.filter(
+            (part) => part.banding === selectedBanding
+          );
+          return { ...lot, parts: filteredParts }; // Filtrelenmiş parçalarla lot'u güncelle
+        });
+
+        return { ...product, lots: filteredLots }; // Filtrelenmiş lotlarla ürünü güncelle
+      })
+    : productsWithLots; // Bantlama seçilmediyse tüm ürünleri göster
 
   return (
     <div className="container mt-4">
