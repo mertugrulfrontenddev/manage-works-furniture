@@ -1,12 +1,12 @@
 import { useEffect, useState, useContext } from "react";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Banding = () => {
   const { products } = useContext(LotContext);
-  const [productsWithParts, setProductsWithParts] = useState([]);
+  const [productsWithLots, setProductsWithLots] = useState([]);
   const [selectedBanding, setSelectedBanding] = useState("");
 
   const handleBandingChange = (event) => {
@@ -14,9 +14,24 @@ const Banding = () => {
   };
 
   useEffect(() => {
-    const fetchProductParts = async () => {
+    const fetchLotAndProducts = async () => {
+      // Lotları getiriyoruz (status "Üretimde" olanlar)
+      const lotQuery = query(
+        collection(db, "lots"),
+        where("status", "==", "Üretimde")
+      );
+      const lotSnapshot = await getDocs(lotQuery);
+      const lots = lotSnapshot.docs.map((doc) => doc.data());
+
+      // Ürünler ile eşleştirme yapıyoruz
       const productList = await Promise.all(
         products.map(async (product) => {
+          // Ürünle eşleşen tüm lotları buluyoruz
+          const matchedLots = lots.filter(
+            (lot) => lot.productCode === product.code
+          );
+
+          // Ürünle eşleşen tüm parçaları alıyoruz
           const partsCollection = collection(
             db,
             `products/${product.code}/parts`
@@ -24,21 +39,33 @@ const Banding = () => {
           const partSnapshot = await getDocs(partsCollection);
           const partsList = partSnapshot.docs.map((doc) => doc.data());
 
-          return { ...product, parts: partsList };
+          // Her lot için parçaları ilişkilendiriyoruz
+          const lotsWithParts = matchedLots.map((lot) => {
+            const partsWithLot = partsList.map((part) => {
+              return { ...part, lotNumber: lot.lotNumber };
+            });
+
+            return { ...lot, parts: partsWithLot };
+          });
+
+          return { ...product, lots: lotsWithParts }; // Ürünle birlikte lotları ekliyoruz
         })
       );
 
-      setProductsWithParts(productList);
+      setProductsWithLots(productList);
     };
 
-    fetchProductParts();
+    fetchLotAndProducts();
   }, [products]);
 
+  // Bantlama türüne göre filtreleme
   const filteredProducts = selectedBanding
-    ? productsWithParts.filter((product) =>
-        product.parts.some((part) => part.banding === selectedBanding)
+    ? productsWithLots.filter((product) =>
+        product.lots.some((lot) =>
+          lot.parts.some((part) => part.banding === selectedBanding)
+        )
       )
-    : productsWithParts;
+    : productsWithLots;
 
   return (
     <div className="container mt-4">
@@ -61,6 +88,7 @@ const Banding = () => {
         <table className="table table-sm" style={{ fontSize: "12px" }}>
           <thead>
             <tr>
+              <th>Lot No</th>
               <th>Ürün Adı</th>
               <th>Ürün Kodu</th>
               <th>Parça Adı</th>
@@ -88,41 +116,48 @@ const Banding = () => {
           </thead>
           <tbody>
             {filteredProducts.map((product) =>
-              product.parts.length > 0 ? (
-                product.parts.map((part, index) => (
-                  <tr key={`${product.code}-${index}`}>
-                    <td>{index === 0 ? product.name || "No Value" : ""}</td>
-                    <td>{index === 0 ? product.code || "No Value" : ""}</td>
-                    <td>{part.partName || "No Value"}</td>
-                    <td>{part.paketNo || "No Value"}</td>
-                    <td>{part.cinsi || "No Value"}</td>
-                    <td>{part.materialColor || "No Value"}</td>
-                    <td>{part.thickness || "No Value"}</td>
-                    <td>{part.unitCount || "No Value"}</td>
-                    <td>{part.totalCount || "No Value"}</td>
-                    <td>{part.pvcColor || "No Value"}</td>
-                    <td>{part.banding || "No Value"}</td>
-
-                    <td>{part.edgeBanding?.en1 || "No Value"}</td>
-                    <td>{part.edgeBanding?.en2 || "No Value"}</td>
-                    <td>{part.edgeBanding?.boy1 || "No Value"}</td>
-                    <td>{part.edgeBanding?.boy2 || "No Value"}</td>
-                    <td>{part.drilling || "No Value"}</td>
-                    <td>{part.channel?.width || "No Value"}</td>
-                    <td>{part.channel?.length || "No Value"}</td>
-                    <td>{part.partSize.length || "No Value"}</td>
-                    <td>{part.partSize.width || "No Value"}</td>
-                    <td>{part.macmazzeNet?.macmazzeLenght || "No Value"}</td>
-                    <td>{part.macmazzeNet?.macmazzeWidth || "No Value"}</td>
-                    <td>{part.description || "No Value"}</td>
+              product.lots.map((lot, lotIndex) =>
+                lot.parts.length > 0 ? (
+                  lot.parts.map((part, partIndex) => (
+                    <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
+                      <td>{lot.lotNumber || "No Value"}</td>
+                      <td>
+                        {partIndex === 0 ? product.name || "No Value" : ""}
+                      </td>
+                      <td>
+                        {partIndex === 0 ? product.code || "No Value" : ""}
+                      </td>
+                      <td>{part.partName || "No Value"}</td>
+                      <td>{part.paketNo || "No Value"}</td>
+                      <td>{part.cinsi || "No Value"}</td>
+                      <td>{part.materialColor || "No Value"}</td>
+                      <td>{part.thickness || "No Value"}</td>
+                      <td>{part.unitCount || "No Value"}</td>
+                      <td>{part.totalCount || "No Value"}</td>
+                      <td>{part.pvcColor || "No Value"}</td>
+                      <td>{part.banding || "No Value"}</td>
+                      <td>{part.edgeBanding?.en1 || "No Value"}</td>
+                      <td>{part.edgeBanding?.en2 || "No Value"}</td>
+                      <td>{part.edgeBanding?.boy1 || "No Value"}</td>
+                      <td>{part.edgeBanding?.boy2 || "No Value"}</td>
+                      <td>{part.drilling || "No Value"}</td>
+                      <td>{part.channel?.width || "No Value"}</td>
+                      <td>{part.channel?.length || "No Value"}</td>
+                      <td>{part.partSize.length || "No Value"}</td>
+                      <td>{part.partSize.width || "No Value"}</td>
+                      <td>{part.macmazzeNet?.macmazzeLenght || "No Value"}</td>
+                      <td>{part.macmazzeNet?.macmazzeWidth || "No Value"}</td>
+                      <td>{part.notes || "Açıklama girilmemiş!"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr key={lot.lotNumber}>
+                    <td>{lot.lotNumber || "No Value"}</td>
+                    <td colSpan="20">
+                      Bu iş emrine ait parça bulunmamaktadır.
+                    </td>
                   </tr>
-                ))
-              ) : (
-                <tr key={product.code}>
-                  <td>{product.name || "No Value"}</td>
-                  <td>{product.code || "No Value"}</td>
-                  <td colSpan="20">Bu ürüne ait parça bulunmamaktadır.</td>
-                </tr>
+                )
               )
             )}
           </tbody>
