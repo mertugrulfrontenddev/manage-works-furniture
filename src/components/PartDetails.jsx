@@ -82,7 +82,7 @@ function PartDetails() {
                   fetchedParts.map((part, index) => (
                     <Card key={index} className="p-2 mb-2">
                       <Row>
-                        <Col md={3}>
+                        <Col md={4}>
                           <p>
                             <strong>Parça Adı:</strong> {part.partName}
                           </p>
@@ -95,22 +95,34 @@ function PartDetails() {
                           <p>
                             <strong>Renk:</strong> {part.materialColor}
                           </p>
+                          <p>
+                            <strong>Kalınlık:</strong>{" "}
+                            {part.thickness || "No Value"}
+                          </p>
+                          <p>
+                            <strong>Adet:</strong>{" "}
+                            {part.unitCount || "No Value"}
+                          </p>
+                          <p>
+                            <strong>Toplam Adet:</strong>{" "}
+                            {part.totalCount || "No Value"}
+                          </p>
                         </Col>
-                        <Col md={3}>
+                        <Col md={4}>
                           <p>
-                            <strong>PVC Rengi:</strong> {part.pvcColor}
+                            <strong>PVC Rengi:</strong>{" "}
+                            {part.pvcColor || "No Value"}
+                          </p>
+                          {/* Edge Banding Section */}
+
+                          <p>
+                            <strong>Bantlama:</strong>{" "}
+                            {part.banding || "No Value"}
                           </p>
                           <p>
-                            <strong>Bantlama:</strong> {part.banding}
-                          </p>
-                          <p>
-                            <strong>Delme:</strong>{" "}
-                            {part.drilling || "No Value"}
-                          </p>
-                          <p>
-                            <strong>Kenar Bandı:</strong>{" "}
+                            <strong>Kenar Bantlama:</strong>{" "}
                             {part.edgeBanding ? (
-                              <div className="d-flex justify-content-between">
+                              <div className="d-flex flex-column justify-content-between">
                                 <p>
                                   <strong>En1:</strong>{" "}
                                   {part.edgeBanding.en1 || "No Value"}
@@ -133,7 +145,15 @@ function PartDetails() {
                             )}
                           </p>
                         </Col>
-                        <Col md={3}>
+
+                        <Col md={4}>
+                          {/* MacmazzeNet Section */}
+
+                          <p>
+                            <strong>Delme:</strong>{" "}
+                            {part.drilling || "No Value"}
+                          </p>
+
                           <p>
                             <strong>Kanal:</strong> Boy:{" "}
                             {part.channel ? part.channel.length : "No Length"} x
@@ -145,8 +165,18 @@ function PartDetails() {
                               ? `${part.partSize.length} x ${part.partSize.width}`
                               : "No Size"}
                           </p>
-                        </Col>
-                        <Col md={3}>
+                          <p>
+                            <strong>Macmazze Ölçü:</strong>
+                          </p>
+                          <p>
+                            <strong>Uzunluk:</strong>{" "}
+                            {part.macmazzeNet?.macmazzeLenght || "No Value"}
+                          </p>
+                          <p>
+                            <strong>Genişlik:</strong>{" "}
+                            {part.macmazzeNet?.macmazzeWidth || "No Value"}
+                          </p>
+
                           <p>
                             <strong>Açıklama:</strong>{" "}
                             {part.notes || "No additional notes"}

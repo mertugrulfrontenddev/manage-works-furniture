@@ -26,7 +26,7 @@ function App() {
           {/* Route for PartDetails */}
           <Route path="/partadd" element={<PartAdd />} />{" "}
           {/* Route for PartAdd */}
-          <Route parth="/banding" element={<Banding />} />
+          <Route path="/banding" element={<Banding />} />
         </Routes>
       </Router>
     </LotProvider>
