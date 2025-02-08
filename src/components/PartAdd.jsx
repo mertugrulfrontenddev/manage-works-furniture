@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { LotContext } from "../context/LotContext";
-import { db } from "../firebase"; // Import Firestore
+import { db } from "../firebase"; // Firestore importu
 import { doc, collection, addDoc } from "firebase/firestore";
 
 const AddPartForm = () => {
@@ -10,7 +10,7 @@ const AddPartForm = () => {
     productCode: "",
     productName: "",
     partName: "",
-    paketNo: "", // Now this is a select field
+    paketNo: "",
     cinsi: "",
     thickness: "",
     unitCount: "",
@@ -21,8 +21,14 @@ const AddPartForm = () => {
       macmazzeWidth: "",
     },
     pvcColor: "",
-    edgeBanding: "", // Now this will store "K Bandlama", "B Bandlama", or "E Kenar"
-    drilling: "", // Directly select drilling type (7kafa, Nanxing 1, Nanxing 2, Uniteam)
+    banding: "", // Bantlama türü
+    edgeBanding: {
+      en1: "",
+      en2: "",
+      boy1: "",
+      boy2: "",
+    },
+    drilling: "",
     channel: { length: "", width: "" },
     partSize: { length: "", width: "" },
     notes: "",
@@ -38,6 +44,14 @@ const AddPartForm = () => {
     setPart((prev) => ({
       ...prev,
       [category]: { ...prev[category], [name]: value },
+    }));
+  };
+
+  const handleEdgeBandingChange = (e) => {
+    const { name, value } = e.target;
+    setPart((prev) => ({
+      ...prev,
+      edgeBanding: { ...prev.edgeBanding, [name]: value },
     }));
   };
 
@@ -59,10 +73,10 @@ const AddPartForm = () => {
     }
 
     try {
-      const productRef = doc(db, "products", part.productCode); // Get product document reference
-      const partsCollectionRef = collection(productRef, "parts"); // Subcollection for parts
+      const productRef = doc(db, "products", part.productCode); // Ürün dokümanı referansı
+      const partsCollectionRef = collection(productRef, "parts"); // Parçalar için alt koleksiyon
 
-      await addDoc(partsCollectionRef, part); // Add part to Firestore
+      await addDoc(partsCollectionRef, part); // Part'ı Firestore'a ekle
 
       alert("Parça başarıyla eklendi!");
       setPart({
@@ -77,8 +91,14 @@ const AddPartForm = () => {
         materialColor: "",
         macmazzeNet: { macmazzeLenght: "", macmazzeWidth: "" },
         pvcColor: "",
-        edgeBanding: "",
-        drilling: "", // Reset the drilling field as well
+        banding: "",
+        edgeBanding: {
+          en1: "",
+          en2: "",
+          boy1: "",
+          boy2: "",
+        },
+        drilling: "",
         channel: { length: "", width: "" },
         partSize: { length: "", width: "" },
         notes: "",
@@ -112,8 +132,9 @@ const AddPartForm = () => {
             </Form.Group>
           </Col>
         </Row>
+
         <Row className="mt-3">
-          <Col md={3}>
+          <Col md={6}>
             <Form.Group>
               <Form.Label>Parça Adı</Form.Label>
               <Form.Control
@@ -155,6 +176,8 @@ const AddPartForm = () => {
                 onChange={handleChange}
               />
             </Form.Group>
+          </Col>
+          <Col md={6}>
             <Form.Group>
               <Form.Label>Kalınlık</Form.Label>
               <Form.Control
@@ -164,19 +187,31 @@ const AddPartForm = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-          </Col>
-          <Col md={3}>
             <Form.Group>
-              <Form.Label>Birim Adet:</Form.Label>
+              <Form.Label>Birim Adedi</Form.Label>
               <Form.Control
-                type="text"
+                type="number"
                 name="unitCount"
                 value={part.unitCount}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Renk</Form.Label>
+              <Form.Label>Toplam Adet</Form.Label>
+              <Form.Control
+                type="number"
+                name="totalCount"
+                value={part.totalCount}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row className="mt-3">
+          <Col md={6}>
+            <Form.Group>
+              <Form.Label>Malzeme Rengi</Form.Label>
               <Form.Control
                 type="text"
                 name="materialColor"
@@ -184,29 +219,8 @@ const AddPartForm = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-
             <Form.Group>
-              <Form.Label>Macmazze Net</Form.Label>
-              <br />
-              <Form.Label>Boy:</Form.Label>
-              <Form.Control
-                type="text"
-                name="macmazzeLenght"
-                value={part.macmazzeNet.macmazzeLenght}
-                onChange={(e) => handleNestedChange(e, "macmazzeNet")}
-              />
-              <Form.Label>Genişlik:</Form.Label>
-              <Form.Control
-                type="text"
-                name="macmazzeWidth"
-                value={part.macmazzeNet.macmazzeWidth}
-                onChange={(e) => handleNestedChange(e, "macmazzeNet")}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label>PVC Rengi</Form.Label>
+              <Form.Label>Pvc Rengi</Form.Label>
               <Form.Control
                 type="text"
                 name="pvcColor"
@@ -215,19 +229,53 @@ const AddPartForm = () => {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Bantlama</Form.Label>
-              <Form.Control
-                as="select"
-                name="edgeBanding"
-                value={part.edgeBanding}
-                onChange={handleChange}
-              >
-                <option value="">Seçiniz</option>
-                <option value="K Bandlama">K Bandlama</option>
-                <option value="B Bandlama">B Bandlama</option>
-                <option value="E Kenar">E Kenar</option>
-              </Form.Control>
+              <Form.Label>Macmazze Boyutları</Form.Label>
+              <Row>
+                <Col>
+                  <Form.Label>Boy</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="macmazzeLenght"
+                    value={part.macmazzeNet.macmazzeLenght}
+                    onChange={(e) => handleNestedChange(e, "macmazzeNet")}
+                  />
+                </Col>
+                <Col>
+                  <Form.Label>En</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="macmazzeWidth"
+                    value={part.macmazzeNet.macmazzeWidth}
+                    onChange={(e) => handleNestedChange(e, "macmazzeNet")}
+                  />
+                </Col>
+              </Row>
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Kanal Boyutları</Form.Label>
+              <Row>
+                <Col>
+                  <Form.Label>Boy</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="length"
+                    value={part.channel.length}
+                    onChange={(e) => handleNestedChange(e, "channel")}
+                  />
+                </Col>
+                <Col>
+                  <Form.Label>En</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="width"
+                    value={part.channel.width}
+                    onChange={(e) => handleNestedChange(e, "channel")}
+                  />
+                </Col>
+              </Row>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
             <Form.Group>
               <Form.Label>Delik</Form.Label>
               <Form.Control
@@ -243,55 +291,95 @@ const AddPartForm = () => {
                 <option value="Uniteam">Uniteam</option>
               </Form.Control>
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Bantlama</Form.Label>
+              <Form.Control
+                as="select"
+                name="banding"
+                value={part.banding}
+                onChange={handleChange}
+              >
+                <option value="">Seçiniz</option>
+                <option value="K Bandlama">K Bandlama</option>
+                <option value="B Bandlama">B Bandlama</option>
+                <option value="E Kenar">E Kenar</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Kenar Bandı(Boy1)</Form.Label>
+              <Form.Control
+                type="text"
+                name="boy1"
+                value={part.edgeBanding.boy1}
+                onChange={handleEdgeBandingChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Kenar Bandı(Boy2)</Form.Label>
+              <Form.Control
+                type="text"
+                name="boy2"
+                value={part.edgeBanding.boy2}
+                onChange={handleEdgeBandingChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Kenar Bandı(En1)</Form.Label>
+              <Form.Control
+                type="text"
+                name="en1"
+                value={part.edgeBanding.en1}
+                onChange={handleEdgeBandingChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Kenar Bandı (En2)</Form.Label>
+              <Form.Control
+                type="text"
+                name="en2"
+                value={part.edgeBanding.en2}
+                onChange={handleEdgeBandingChange}
+              />
+            </Form.Group>
           </Col>
         </Row>
+
         <Row className="mt-3">
-          <Col md={3}>
+          <Col md={12}>
             <Form.Group>
-              <Form.Label>Kanal Boy:</Form.Label>
-              <Form.Control
-                type="text"
-                name="length"
-                value={part.channel.length}
-                onChange={(e) => handleNestedChange(e, "channel")}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Kanal Genişlik</Form.Label>
-              <Form.Control
-                type="text"
-                name="width"
-                value={part.channel.width}
-                onChange={(e) => handleNestedChange(e, "channel")}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group>
-              <Form.Label> Parça Ölçüsü</Form.Label> <br />
-              <Form.Label> Boy</Form.Label>
-              <Form.Control
-                type="text"
-                name="length"
-                value={part.partSize.length}
-                onChange={(e) => handleNestedChange(e, "partSize")}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Genişlik</Form.Label>
-              <Form.Control
-                type="text"
-                name="width"
-                value={part.partSize.width}
-                onChange={(e) => handleNestedChange(e, "partSize")}
-              />
+              <Form.Label>Parça Boyutları</Form.Label>
+              <Row>
+                <Col>
+                  <Form.Label>Boy</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="length"
+                    value={part.partSize.length}
+                    onChange={(e) => handleNestedChange(e, "partSize")}
+                  />
+                </Col>
+                <Col>
+                  <Form.Label>En</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="width"
+                    value={part.partSize.width}
+                    onChange={(e) => handleNestedChange(e, "partSize")}
+                  />
+                </Col>
+              </Row>
             </Form.Group>
           </Col>
-          <Col md={6}>
+        </Row>
+
+        <Row className="mt-3">
+          <Col md={12}>
             <Form.Group>
-              <Form.Label>Açıklama</Form.Label>
+              <Form.Label>Notlar</Form.Label>
               <Form.Control
                 as="textarea"
+                rows={3}
                 name="notes"
                 value={part.notes}
                 onChange={handleChange}
@@ -299,8 +387,9 @@ const AddPartForm = () => {
             </Form.Group>
           </Col>
         </Row>
+
         <Button variant="primary" type="submit" className="mt-3">
-          Parça Ekle
+          Kaydet
         </Button>
       </Form>
     </Card>

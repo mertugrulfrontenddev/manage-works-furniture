@@ -101,22 +101,49 @@ function PartDetails() {
                             <strong>PVC Rengi:</strong> {part.pvcColor}
                           </p>
                           <p>
-                            <strong>Edge Banding:</strong>{" "}
-                            {part.edgeBanding || "No Value"}
+                            <strong>Bantlama:</strong> {part.banding}
                           </p>
                           <p>
                             <strong>Delme:</strong>{" "}
                             {part.drilling || "No Value"}
                           </p>
+                          <p>
+                            <strong>Kenar Bandı:</strong>{" "}
+                            {part.edgeBanding ? (
+                              <div className="d-flex justify-content-between">
+                                <p>
+                                  <strong>En1:</strong>{" "}
+                                  {part.edgeBanding.en1 || "No Value"}
+                                </p>
+                                <p>
+                                  <strong>En2:</strong>{" "}
+                                  {part.edgeBanding.en2 || "No Value"}
+                                </p>
+                                <p>
+                                  <strong>Boy1:</strong>{" "}
+                                  {part.edgeBanding.boy1 || "No Value"}
+                                </p>
+                                <p>
+                                  <strong>Boy2:</strong>{" "}
+                                  {part.edgeBanding.boy2 || "No Value"}
+                                </p>
+                              </div>
+                            ) : (
+                              <p>No Edge Banding</p>
+                            )}
+                          </p>
                         </Col>
                         <Col md={3}>
                           <p>
-                            <strong>Kanal:</strong> Boy: {part.channel.length} x
-                            En: {part.channel.width}
+                            <strong>Kanal:</strong> Boy:{" "}
+                            {part.channel ? part.channel.length : "No Length"} x
+                            En: {part.channel ? part.channel.width : "No Width"}
                           </p>
                           <p>
                             <strong>Parça Ölçüsü:</strong>{" "}
-                            {part.partSize.length} x {part.partSize.width}
+                            {part.partSize
+                              ? `${part.partSize.length} x ${part.partSize.width}`
+                              : "No Size"}
                           </p>
                         </Col>
                         <Col md={3}>
