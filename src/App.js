@@ -8,6 +8,7 @@ import PartAdd from "./components/PartAdd";
 import Navigation from "./components/Navigation";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import BrowserRouter
 import Banding from "./components/Banding";
+import Drilling from "./components/Drilling";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/partadd" element={<PartAdd />} />{" "}
           {/* Route for PartAdd */}
           <Route path="/banding" element={<Banding />} />
+          <Route path="/drilling" element={<Drilling />} />
         </Routes>
       </Router>
     </LotProvider>

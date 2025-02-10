@@ -7,10 +7,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Banding = () => {
   const { products } = useContext(LotContext);
   const [productsWithLots, setProductsWithLots] = useState([]);
-  const [selectedBanding, setSelectedBanding] = useState("");
+  const [selectedHoleType, setSelectedHoleType] = useState(""); // Changed variable name
 
-  const handleBandingChange = (event) => {
-    setSelectedBanding(event.target.value);
+  const handleHoleTypeChange = (event) => {
+    // Changed function name
+    setSelectedHoleType(event.target.value);
   };
 
   useEffect(() => {
@@ -58,38 +59,38 @@ const Banding = () => {
     fetchLotAndProducts();
   }, [products]);
 
-  // Bantlama türüne göre filtreleme
-  const filteredProducts = selectedBanding
+  // Delik Tipi'ne göre filtreleme
+  const filteredProducts = selectedHoleType
     ? productsWithLots.map((product) => {
         const filteredLots = product.lots.map((lot) => {
           // Part bazında filtreleme
           const filteredParts = lot.parts.filter(
-            (part) => part.banding === selectedBanding
+            (part) => part.drilling === selectedHoleType // Changed to filter based on holeType
           );
           return { ...lot, parts: filteredParts }; // Filtrelenmiş parçalarla lot'u güncelle
         });
 
         return { ...product, lots: filteredLots }; // Filtrelenmiş lotlarla ürünü güncelle
       })
-    : productsWithLots; // Bantlama seçilmediyse tüm ürünleri göster
+    : productsWithLots; // Delik Tipi seçilmediyse tüm ürünleri göster
 
   return (
     <div className="container mt-4">
       <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar</h3>
-
-      <label htmlFor="banding">Bantlama Türü:</label>
+      <label htmlFor="holeType">Delik Tipi Seçiniz:</label>{" "}
+      {/* Updated label */}
       <select
-        id="banding"
-        value={selectedBanding}
-        onChange={handleBandingChange}
+        id="holeType"
+        value={selectedHoleType}
+        onChange={handleHoleTypeChange}
         className="form-select mb-3"
       >
-        <option value="">Tüm Bantlamalar</option>
-        <option value="K Bandlama">K Bandlama</option>
-        <option value="B Bandlama">B Bandlama</option>
-        <option value="E Kenar">E Kenar</option>
+        <option value="">Bütün Delik Tipleri</option>
+        <option value="7kafa">7kafa</option>
+        <option value="Nanxing 1">Nanxing 1</option>
+        <option value="Nanxing 2">Nanxing 2</option>
+        <option value="Uniteam">Uniteam</option>
       </select>
-
       <div className="table-responsive">
         <table className="table table-sm" style={{ fontSize: "12px" }}>
           <thead>
@@ -105,7 +106,7 @@ const Banding = () => {
               <th>Adet</th>
               <th>Toplam Adet</th>
               <th>PVC Rengi</th>
-              <th>Bantlama</th>
+              <th>Delik Tipi</th> {/* Changed to Hole Type */}
               <th>Kenar Boy1</th>
               <th>Kenar Boy2</th>
               <th>Kenar En1</th>
@@ -141,12 +142,12 @@ const Banding = () => {
                       <td>{part.unitCount || "No Value"}</td>
                       <td>{part.totalCount || "No Value"}</td>
                       <td>{part.pvcColor || "No Value"}</td>
-                      <td>{part.banding || "No Value"}</td>
+                      <td>{part.drilling || "No Value"}</td>{" "}
+                      {/* Updated field */}
                       <td>{part.edgeBanding?.boy1 || "No Value"}</td>
                       <td>{part.edgeBanding?.boy2 || "No Value"}</td>
                       <td>{part.edgeBanding?.en1 || "No Value"}</td>
                       <td>{part.edgeBanding?.en2 || "No Value"}</td>
-
                       <td>{part.drilling || "No Value"}</td>
                       <td>{part.channel?.width || "No Value"}</td>
                       <td>{part.channel?.length || "No Value"}</td>

@@ -35,6 +35,12 @@ function Navigation() {
           </Link>{" "}
           {/* Link to Part Add */}
         </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/drilling">
+            Delik
+          </Link>{" "}
+          {/* Link to Part Add */}
+        </li>
       </ul>
     </nav>
   );
