@@ -3,16 +3,20 @@ import { useEffect } from "react";
 
 function Navigation() {
   useEffect(() => {
-    // Dropdown menülerinin hover ile açılmasını sağla
+    // Hover menülerini büyük ekranlarda aktif et
     document.querySelectorAll(".nav-item.dropdown").forEach((dropdown) => {
       dropdown.addEventListener("mouseenter", () => {
-        dropdown.classList.add("show");
-        dropdown.querySelector(".dropdown-menu").classList.add("show");
+        if (window.innerWidth >= 992) {
+          dropdown.classList.add("show");
+          dropdown.querySelector(".dropdown-menu").classList.add("show");
+        }
       });
 
       dropdown.addEventListener("mouseleave", () => {
-        dropdown.classList.remove("show");
-        dropdown.querySelector(".dropdown-menu").classList.remove("show");
+        if (window.innerWidth >= 992) {
+          dropdown.classList.remove("show");
+          dropdown.querySelector(".dropdown-menu").classList.remove("show");
+        }
       });
     });
   }, []);
@@ -20,7 +24,7 @@ function Navigation() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        {/* Navbar başlığı */}
+        {/* Navbar Başlığı */}
         <Link className="navbar-brand" to="/">
           İş Takip Sistemi
         </Link>
@@ -38,7 +42,7 @@ function Navigation() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Menü içeriği */}
+        {/* Menü İçeriği */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             {/* EKLE Dropdown Menü */}
@@ -48,6 +52,8 @@ function Navigation() {
                 href="#"
                 id="ekleDropdown"
                 role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
                 Ekle
               </a>
@@ -70,11 +76,14 @@ function Navigation() {
               </ul>
             </li>
 
+            {/* İş Emri Listesi */}
             <li className="nav-item">
               <Link className="nav-link" to="/">
                 İş Emri Listesi
               </Link>
             </li>
+
+            {/* Parça Detay Sayfası */}
             <li className="nav-item">
               <Link className="nav-link" to="/partdetails">
                 Parça Detay Sayfası
@@ -88,6 +97,8 @@ function Navigation() {
                 href="#"
                 id="uretimDropdown"
                 role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
                 Üretim
               </a>

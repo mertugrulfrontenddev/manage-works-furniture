@@ -126,7 +126,7 @@ function LotForm() {
   };
 
   return (
-    <Container className="mt-5">
+    <Container className="mt-2">
       <h2 className="mb-4 text-center">İş Emri Ekle</h2>
       <Row className="justify-content-center">
         <Col md={6} sm={8} xs={10}>
