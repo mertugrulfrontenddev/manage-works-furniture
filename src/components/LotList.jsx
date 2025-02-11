@@ -40,6 +40,9 @@ function LotList() {
                   <Card.Subtitle className="mb-2 text-muted">
                     {lot.productName}
                   </Card.Subtitle>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {lot.productCode}
+                  </Card.Subtitle>
                   <Card.Text>
                     <strong>Adet:</strong> {lot.quantity} <br />
                     <strong>Durum:</strong> {lot.status}
