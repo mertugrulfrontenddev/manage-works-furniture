@@ -8,7 +8,7 @@ function PartDetails() {
   const { lots } = useContext(LotContext);
   const [selectedLot, setSelectedLot] = useState(null);
   const [myLots, setMyLots] = useState([]);
-  const [fetchedParts, setFetchedParts] = useState([]);
+  const [partsData, setPartsData] = useState({}); // Parts verisini her lot için tutmak amacıyla obje kullanacağız
 
   useEffect(() => {
     const fetchLots = async () => {
@@ -30,18 +30,26 @@ function PartDetails() {
   }, []);
 
   const handleDetailsClick = async (lotNumber) => {
-    setSelectedLot(selectedLot === lotNumber ? null : lotNumber);
+    setSelectedLot((prev) => (prev === lotNumber ? null : lotNumber));
 
-    if (selectedLot !== lotNumber) {
-      // Fetch parts for the selected lot's product code
+    if (!partsData[lotNumber]) {
+      // partsData'yı kontrol ediyoruz, zaten varsa tekrar veri çekmeye gerek yok
       const lot = myLots.find((l) => l.lotNumber === lotNumber);
-      const productCode = lot?.productCode;
+      const productCode = lot?.productCode; // Burada düzeltme yapıldı
 
       if (productCode) {
-        const partsRef = collection(db, "products", productCode, "parts");
-        const partsSnapshot = await getDocs(partsRef);
-        const fetchedPartsData = partsSnapshot.docs.map((doc) => doc.data());
-        setFetchedParts(fetchedPartsData); // Store fetched parts in state
+        try {
+          const partsRef = collection(db, "products", productCode, "parts");
+          const partsSnapshot = await getDocs(partsRef);
+          const fetchedPartsData = partsSnapshot.docs.map((doc) => doc.data());
+
+          setPartsData((prev) => ({
+            ...prev,
+            [lotNumber]: fetchedPartsData,
+          }));
+        } catch (error) {
+          console.error("Error fetching parts: ", error);
+        }
       }
     }
   };
@@ -78,8 +86,8 @@ function PartDetails() {
             </Button>
             {selectedLot === lot.lotNumber && (
               <div className="mt-3">
-                {fetchedParts.length > 0 ? (
-                  fetchedParts.map((part, index) => (
+                {partsData[lot.lotNumber]?.length > 0 ? (
+                  partsData[lot.lotNumber].map((part, index) => (
                     <Card key={index} className="p-2 mb-2">
                       <Row>
                         <Col md={4}>
@@ -113,7 +121,6 @@ function PartDetails() {
                             <strong>PVC Rengi:</strong>{" "}
                             {part.pvcColor || "No Value"}
                           </p>
-                          {/* Edge Banding Section */}
 
                           <p>
                             <strong>Bantlama:</strong>{" "}
@@ -147,8 +154,6 @@ function PartDetails() {
                         </Col>
 
                         <Col md={4}>
-                          {/* MacmazzeNet Section */}
-
                           <p>
                             <strong>Delme:</strong>{" "}
                             {part.drilling || "No Value"}
