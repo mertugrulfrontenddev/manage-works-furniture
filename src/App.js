@@ -10,6 +10,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Im
 import Banding from "./components/Banding";
 import Drilling from "./components/Drilling";
 import Sizing from "./components/Sizing";
+import SizingList from "./components/SizingList";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
           <Route path="/partadd" element={<PartAdd />} />{" "}
           {/* Route for PartAdd */}
           <Route path="/sizing" element={<Sizing />} />
+          <Route path="/sizinglist" element={<SizingList />} />
           <Route path="/banding" element={<Banding />} />
           <Route path="/drilling" element={<Drilling />} />
         </Routes>
