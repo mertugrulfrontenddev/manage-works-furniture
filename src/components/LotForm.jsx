@@ -17,7 +17,7 @@ function LotForm() {
   const [formData, setFormData] = useState({
     productCode: "",
     productName: "",
-    quantity: "",
+    quantity: "100", // Başlangıç değeri 100
     status: "Üretimde",
     lotNumber: 1,
   });
@@ -92,7 +92,7 @@ function LotForm() {
       setFormData({
         productCode: "",
         productName: "",
-        quantity: "",
+        quantity: "100", // Başlangıçta 100
         status: "Üretimde",
         lotNumber: newLotNumber, // Yeni lot numarasını state'e güncelle
       });
@@ -121,7 +121,7 @@ function LotForm() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value, // [name] ile ilgili alanı güncelliyoruz
     }));
   };
 
@@ -161,13 +161,15 @@ function LotForm() {
             <Form.Group className="mb-3" controlId="formQuantity">
               <Form.Label>Adet</Form.Label>
               <Form.Control
-                type="number"
+                as="select"
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleInputChange}
-                placeholder="Adet girin"
-                required
-              />
+              >
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formStatus">
@@ -177,7 +179,7 @@ function LotForm() {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                placeholder="Durum girin"
+                disabled
               />
             </Form.Group>
 
@@ -198,29 +200,6 @@ function LotForm() {
           </Form>
         </Col>
       </Row>
-
-      {/*  <div>
-        <h3>Mevcut İş Emirleri</h3>
-        <Row className="mt-3">
-          {lots.map((lot, index) => (
-            <Col key={index} md={4} sm={6} xs={12} className="mb-4">
-              <Card>
-                <Card.Body>
-                  <Card.Title>Lot No: {lot.lotNumber}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">
-                    {lot.productCode}
-                  </Card.Subtitle>
-                  <Card.Text>
-                    <strong>Ürün Adı:</strong> {lot.productName} <br />
-                    <strong>Adet:</strong> {lot.quantity} <br />
-                    <strong>Durum:</strong> {lot.status}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div> */}
     </Container>
   );
 }
