@@ -9,6 +9,7 @@ import Navigation from "./components/Navigation";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import BrowserRouter
 import Banding from "./components/Banding";
 import Drilling from "./components/Drilling";
+import Sizing from "./components/Sizing";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           {/* Route for PartDetails */}
           <Route path="/partadd" element={<PartAdd />} />{" "}
           {/* Route for PartAdd */}
+          <Route path="/sizing" element={<Sizing />} />
           <Route path="/banding" element={<Banding />} />
           <Route path="/drilling" element={<Drilling />} />
         </Routes>

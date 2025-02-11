@@ -30,6 +30,12 @@ function Navigation() {
           {/* Link to Part Add */}
         </li>
         <li className="nav-item">
+          <Link className="nav-link" to="/sizing">
+            Ebatlama Ekle
+          </Link>{" "}
+          {/* Link to Part Add */}
+        </li>
+        <li className="nav-item">
           <Link className="nav-link" to="/banding">
             Bantlama
           </Link>{" "}
