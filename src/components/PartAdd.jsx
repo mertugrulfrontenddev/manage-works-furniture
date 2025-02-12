@@ -7,6 +7,7 @@ import { doc, collection, addDoc } from "firebase/firestore";
 const AddPartForm = () => {
   const { products } = useContext(LotContext);
   const [part, setPart] = useState({
+    partCode: "",
     productCode: "",
     productName: "",
     partName: "",
@@ -80,6 +81,7 @@ const AddPartForm = () => {
 
       alert("Parça başarıyla eklendi!");
       setPart({
+        partCode: "",
         productCode: "",
         productName: "",
         partName: "",
@@ -141,6 +143,16 @@ const AddPartForm = () => {
                 type="text"
                 name="partName"
                 value={part.partName}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Parça Kodu:</Form.Label>
+              <Form.Control
+                type="text"
+                name="partCode"
+                value={part.partCode}
                 onChange={handleChange}
                 required
               />
