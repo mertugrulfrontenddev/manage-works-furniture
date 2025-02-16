@@ -1,94 +1,164 @@
 import { useEffect, useState, useContext } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  updateDoc,
+  doc,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Banding = () => {
   const { products } = useContext(LotContext);
   const [productsWithLots, setProductsWithLots] = useState([]);
-  const [selectedBanding, setSelectedBanding] = useState("");
+  const [startTimes, setStartTimes] = useState({});
+  const [endTimes, setEndTimes] = useState({});
+  const [bandingFilter, setBandingFilter] = useState(""); // Add filter state
 
-  const handleBandingChange = (event) => {
-    setSelectedBanding(event.target.value);
+  const handleTimeChange = (lotNumber, partId, type, value) => {
+    if (type === "start") {
+      setStartTimes((prev) => ({ ...prev, [`${lotNumber}-${partId}`]: value }));
+    } else {
+      setEndTimes((prev) => ({ ...prev, [`${lotNumber}-${partId}`]: value }));
+    }
+  };
+
+  // Fetch saved start and end times from Firestore
+  const fetchSavedTimes = async () => {
+    const operationQuery = query(collection(db, "operations"));
+    const operationSnapshot = await getDocs(operationQuery);
+    const operationData = operationSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const savedStartTimes = {};
+    const savedEndTimes = {};
+
+    operationData.forEach((operation) => {
+      const { lotNumber, partId, startTime, endTime } = operation;
+      savedStartTimes[`${lotNumber}-${partId}`] = startTime;
+      savedEndTimes[`${lotNumber}-${partId}`] = endTime;
+    });
+
+    setStartTimes(savedStartTimes);
+    setEndTimes(savedEndTimes);
+  };
+
+  // Update start time in Firestore
+  const updatePartStartTime = async (lotNumber, partId) => {
+    const startTime = startTimes[`${lotNumber}-${partId}`] || "";
+    if (!startTime) return;
+
+    const operationRef = doc(db, "operations", `${lotNumber}-${partId}`);
+
+    // If document doesn't exist, create a new document with start time
+    await setDoc(operationRef, {
+      lotNumber,
+      partId,
+      startTime,
+      type: "banding",
+      timestamp: new Date(),
+    });
+  };
+
+  // Update end time in Firestore
+  const updatePartEndTime = async (lotNumber, partId) => {
+    const endTime = endTimes[`${lotNumber}-${partId}`] || "";
+    const startTime = startTimes[`${lotNumber}-${partId}`] || "";
+
+    // If end time is empty or end time is before start time, show an error
+    if (!endTime) return;
+    if (new Date(endTime) < new Date(startTime)) {
+      alert("Bitiş zamanı başlama zamanından önce olamaz!");
+      return;
+    }
+
+    const operationRef = doc(db, "operations", `${lotNumber}-${partId}`);
+
+    // Update the existing document with the end time
+    await updateDoc(operationRef, {
+      endTime,
+      timestamp: new Date(),
+    });
+  };
+
+  const fetchLotAndProducts = async () => {
+    const lotQuery = query(
+      collection(db, "lots"),
+      where("status", "==", "Üretimde")
+    );
+    const lotSnapshot = await getDocs(lotQuery);
+    const lots = lotSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const productList = await Promise.all(
+      products.map(async (product) => {
+        const matchedLots = lots.filter(
+          (lot) => lot.productCode === product.code
+        );
+
+        const partsCollection = collection(
+          db,
+          `products/${product.code}/parts`
+        );
+        const partSnapshot = await getDocs(partsCollection);
+        const partsList = partSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        const lotsWithParts = matchedLots.map((lot) => {
+          const partsWithLot = partsList.map((part) => {
+            return {
+              ...part,
+              lotNumber: lot.lotNumber,
+              startTime: part.startTime || "", // Firestore'dan gelen zaman
+              endTime: part.endTime || "", // Firestore'dan gelen zaman
+            };
+          });
+          return { ...lot, parts: partsWithLot };
+        });
+
+        return { ...product, lots: lotsWithParts };
+      })
+    );
+
+    setProductsWithLots(productList);
   };
 
   useEffect(() => {
-    const fetchLotAndProducts = async () => {
-      // Lotları getiriyoruz (status "Üretimde" olanlar)
-      const lotQuery = query(
-        collection(db, "lots"),
-        where("status", "==", "Üretimde")
-      );
-      const lotSnapshot = await getDocs(lotQuery);
-      const lots = lotSnapshot.docs.map((doc) => doc.data());
-
-      // Ürünler ile eşleştirme yapıyoruz
-      const productList = await Promise.all(
-        products.map(async (product) => {
-          // Ürünle eşleşen tüm lotları buluyoruz
-          const matchedLots = lots.filter(
-            (lot) => lot.productCode === product.code
-          );
-
-          // Ürünle eşleşen tüm parçaları alıyoruz
-          const partsCollection = collection(
-            db,
-            `products/${product.code}/parts`
-          );
-          const partSnapshot = await getDocs(partsCollection);
-          const partsList = partSnapshot.docs.map((doc) => doc.data());
-
-          // Her lot için parçaları ilişkilendiriyoruz
-          const lotsWithParts = matchedLots.map((lot) => {
-            const partsWithLot = partsList.map((part) => {
-              return { ...part, lotNumber: lot.lotNumber };
-            });
-
-            return { ...lot, parts: partsWithLot };
-          });
-
-          return { ...product, lots: lotsWithParts }; // Ürünle birlikte lotları ekliyoruz
-        })
-      );
-
-      setProductsWithLots(productList);
-    };
-
     fetchLotAndProducts();
+    fetchSavedTimes(); // Fetch the saved times on component mount
   }, [products]);
-
-  // Bantlama türüne göre filtreleme
-  const filteredProducts = selectedBanding
-    ? productsWithLots.map((product) => {
-        const filteredLots = product.lots.map((lot) => {
-          // Part bazında filtreleme
-          const filteredParts = lot.parts.filter(
-            (part) => part.banding === selectedBanding
-          );
-          return { ...lot, parts: filteredParts }; // Filtrelenmiş parçalarla lot'u güncelle
-        });
-
-        return { ...product, lots: filteredLots }; // Filtrelenmiş lotlarla ürünü güncelle
-      })
-    : productsWithLots; // Bantlama seçilmediyse tüm ürünleri göster
 
   return (
     <div className="container mt-4">
       <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar</h3>
 
-      <label htmlFor="banding">Bantlama Türü:</label>
-      <select
-        id="banding"
-        value={selectedBanding}
-        onChange={handleBandingChange}
-        className="form-select mb-3"
-      >
-        <option value="">Tüm Bantlamalar</option>
-        <option value="K Bandlama">K Bandlama</option>
-        <option value="B Bandlama">B Bandlama</option>
-        <option value="E Kenar">E Kenar</option>
-      </select>
+      {/* Filter for banding type */}
+      <div className="mb-3">
+        <label htmlFor="bandingFilter">Bantlama Türü</label>
+        <select
+          id="bandingFilter"
+          className="form-control"
+          onChange={(e) => setBandingFilter(e.target.value)}
+        >
+          <option value="">Tümü</option>
+          <option value="K Bandlama">K Bandlama</option>
+          <option value="B Bandlama">B Bandlama</option>
+          <option value="E Kenar">E Kenar</option>
+          {/* Add more banding types as needed */}
+        </select>
+      </div>
 
       <div className="table-responsive">
         <table className="table table-sm" style={{ fontSize: "12px" }}>
@@ -100,31 +170,37 @@ const Banding = () => {
               <th>Parça Adı</th>
               <th>Paket No</th>
               <th>Cinsi</th>
-              <th>Renk</th>
-              <th>Kalınlık</th>
-              <th>Adet</th>
-              <th>Toplam Adet</th>
-              <th>PVC Rengi</th>
-              <th>Bantlama</th>
-              <th>Kenar Boy1</th>
-              <th>Kenar Boy2</th>
-              <th>Kenar En1</th>
-              <th>Kenar En2</th>
-              <th>Delme</th>
-              <th>Kanal Boy</th>
-              <th>Kanal En</th>
-              <th>Parça Ölçüsü U</th>
-              <th>Parça Ölçüsü G</th>
-              <th>Macmazze U</th>
-              <th>Macmazze G</th>
-              <th>Açıklama</th>
+              <th>Material Color</th>
+              <th>Thickness</th>
+              <th>Unit Count</th>
+              <th>Total Count</th>
+              <th>PVC Color</th>
+              <th>Banding</th>
+              <th>Edge Banding Boy1</th>
+              <th>Edge Banding Boy2</th>
+              <th>Edge Banding En1</th>
+              <th>Edge Banding En2</th>
+              <th>Drilling</th>
+              <th>Channel Width</th>
+              <th>Channel Length</th>
+              <th>Part Size Length</th>
+              <th>Part Size Width</th>
+              <th>Macmazze Net Length</th>
+              <th>Macmazze Net Width</th>
+              <th>Notes</th>
+              <th>Başlama Zamanı</th>
+              <th>Bitiş Zamanı</th>
+              <th>Güncelle</th>
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) =>
+            {productsWithLots.map((product) =>
               product.lots.map((lot, lotIndex) =>
-                lot.parts.length > 0 ? (
-                  lot.parts.map((part, partIndex) => (
+                lot.parts
+                  .filter((part) =>
+                    bandingFilter ? part.banding === bandingFilter : true
+                  ) // Apply the filter here
+                  .map((part, partIndex) => (
                     <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
                       <td>{lot.lotNumber || "No Value"}</td>
                       <td>
@@ -146,25 +222,64 @@ const Banding = () => {
                       <td>{part.edgeBanding?.boy2 || "No Value"}</td>
                       <td>{part.edgeBanding?.en1 || "No Value"}</td>
                       <td>{part.edgeBanding?.en2 || "No Value"}</td>
-
                       <td>{part.drilling || "No Value"}</td>
                       <td>{part.channel?.width || "No Value"}</td>
                       <td>{part.channel?.length || "No Value"}</td>
-                      <td>{part.partSize.length || "No Value"}</td>
-                      <td>{part.partSize.width || "No Value"}</td>
+                      <td>{part.partSize?.length || "No Value"}</td>
+                      <td>{part.partSize?.width || "No Value"}</td>
                       <td>{part.macmazzeNet?.macmazzeLenght || "No Value"}</td>
                       <td>{part.macmazzeNet?.macmazzeWidth || "No Value"}</td>
                       <td>{part.notes || "Açıklama girilmemiş!"}</td>
+                      <td>
+                        <input
+                          type="datetime-local"
+                          value={
+                            startTimes[`${lot.lotNumber}-${part.id}`] || ""
+                          }
+                          onChange={(e) =>
+                            handleTimeChange(
+                              lot.lotNumber,
+                              part.id,
+                              "start",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="datetime-local"
+                          value={endTimes[`${lot.lotNumber}-${part.id}`] || ""}
+                          onChange={(e) =>
+                            handleTimeChange(
+                              lot.lotNumber,
+                              part.id,
+                              "end",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() =>
+                            updatePartStartTime(lot.lotNumber, part.id)
+                          }
+                        >
+                          Başlama Zamanı Kaydet
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm mt-1"
+                          onClick={() =>
+                            updatePartEndTime(lot.lotNumber, part.id)
+                          }
+                        >
+                          Bitiş Zamanı Kaydet
+                        </button>
+                      </td>
                     </tr>
                   ))
-                ) : (
-                  <tr key={lot.lotNumber}>
-                    <td>{lot.lotNumber || "No Value"}</td>
-                    <td colSpan="20">
-                      Bu iş emrine ait parça bulunmamaktadır.
-                    </td>
-                  </tr>
-                )
               )
             )}
           </tbody>
