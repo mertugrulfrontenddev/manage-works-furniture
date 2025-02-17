@@ -5,11 +5,9 @@ import {
   getDocs,
   query,
   where,
-  addDoc,
+  setDoc,
   updateDoc,
   doc,
-  setDoc,
-  getDoc,
 } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -19,19 +17,28 @@ const Banding = () => {
   const [productsWithLots, setProductsWithLots] = useState([]);
   const [startTimes, setStartTimes] = useState({});
   const [endTimes, setEndTimes] = useState({});
-  const [bandingFilter, setBandingFilter] = useState(""); // Add filter state
+  const [bandingFilter, setBandingFilter] = useState(""); // Add filter state for banding
 
   const handleTimeChange = (lotNumber, partId, type, value) => {
     if (type === "start") {
-      setStartTimes((prev) => ({ ...prev, [`${lotNumber}-${partId}`]: value }));
+      setStartTimes((prev) => ({
+        ...prev,
+        [`${lotNumber}-${partId}-banding`]: value,
+      }));
     } else {
-      setEndTimes((prev) => ({ ...prev, [`${lotNumber}-${partId}`]: value }));
+      setEndTimes((prev) => ({
+        ...prev,
+        [`${lotNumber}-${partId}-banding`]: value,
+      }));
     }
   };
 
-  // Fetch saved start and end times from Firestore
+  // Fetch saved times for 'banding' and 'delme' operations
   const fetchSavedTimes = async () => {
-    const operationQuery = query(collection(db, "operations"));
+    const operationQuery = query(
+      collection(db, "operations"),
+      where("type", "in", ["banding", "delme"]) // Fetch both banding and delme operations
+    );
     const operationSnapshot = await getDocs(operationQuery);
     const operationData = operationSnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -42,53 +49,67 @@ const Banding = () => {
     const savedEndTimes = {};
 
     operationData.forEach((operation) => {
-      const { lotNumber, partId, startTime, endTime } = operation;
-      savedStartTimes[`${lotNumber}-${partId}`] = startTime;
-      savedEndTimes[`${lotNumber}-${partId}`] = endTime;
+      const { lotNumber, partId, startTime, endTime, type } = operation;
+      const key = `${lotNumber}-${partId}-${type}`;
+
+      if (type === "banding") {
+        savedStartTimes[key] = startTime;
+        savedEndTimes[key] = endTime;
+      }
+      if (type === "delme") {
+        savedStartTimes[`${key}-delme`] = startTime;
+        savedEndTimes[`${key}-delme`] = endTime;
+      }
     });
 
     setStartTimes(savedStartTimes);
     setEndTimes(savedEndTimes);
   };
 
-  // Update start time in Firestore
-  const updatePartStartTime = async (lotNumber, partId) => {
-    const startTime = startTimes[`${lotNumber}-${partId}`] || "";
+  // Update start time for banding operation
+  const updatePartStartTime = async (lotNumber, partId, type) => {
+    const startTime = startTimes[`${lotNumber}-${partId}-${type}`] || "";
     if (!startTime) return;
 
-    const operationRef = doc(db, "operations", `${lotNumber}-${partId}`);
+    const operationRef = doc(
+      db,
+      "operations",
+      `${lotNumber}-${partId}-${type}`
+    );
 
-    // If document doesn't exist, create a new document with start time
     await setDoc(operationRef, {
       lotNumber,
       partId,
       startTime,
-      type: "banding",
+      type, // type is "banding" here
       timestamp: new Date(),
     });
   };
 
-  // Update end time in Firestore
-  const updatePartEndTime = async (lotNumber, partId) => {
-    const endTime = endTimes[`${lotNumber}-${partId}`] || "";
-    const startTime = startTimes[`${lotNumber}-${partId}`] || "";
+  // Update end time for banding operation
+  const updatePartEndTime = async (lotNumber, partId, type) => {
+    const endTime = endTimes[`${lotNumber}-${partId}-${type}`] || "";
+    const startTime = startTimes[`${lotNumber}-${partId}-${type}`] || "";
 
-    // If end time is empty or end time is before start time, show an error
     if (!endTime) return;
     if (new Date(endTime) < new Date(startTime)) {
       alert("Bitiş zamanı başlama zamanından önce olamaz!");
       return;
     }
 
-    const operationRef = doc(db, "operations", `${lotNumber}-${partId}`);
+    const operationRef = doc(
+      db,
+      "operations",
+      `${lotNumber}-${partId}-${type}`
+    );
 
-    // Update the existing document with the end time
     await updateDoc(operationRef, {
       endTime,
       timestamp: new Date(),
     });
   };
 
+  // Fetch products and lots from Firestore
   const fetchLotAndProducts = async () => {
     const lotQuery = query(
       collection(db, "lots"),
@@ -137,12 +158,12 @@ const Banding = () => {
 
   useEffect(() => {
     fetchLotAndProducts();
-    fetchSavedTimes(); // Fetch the saved times on component mount
+    fetchSavedTimes(); // Fetch saved times on component mount
   }, [products]);
 
   return (
     <div className="container mt-4">
-      <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar</h3>
+      <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar (Bantlama)</h3>
 
       {/* Filter for banding type */}
       <div className="mb-3">
@@ -152,11 +173,10 @@ const Banding = () => {
           className="form-control"
           onChange={(e) => setBandingFilter(e.target.value)}
         >
-          <option value="">Tümü</option>
+          <option value="">Seçiniz</option>
           <option value="K Bandlama">K Bandlama</option>
           <option value="B Bandlama">B Bandlama</option>
           <option value="E Kenar">E Kenar</option>
-          {/* Add more banding types as needed */}
         </select>
       </div>
 
@@ -175,22 +195,9 @@ const Banding = () => {
               <th>Unit Count</th>
               <th>Total Count</th>
               <th>PVC Color</th>
-              <th>Banding</th>
-              <th>Edge Banding Boy1</th>
-              <th>Edge Banding Boy2</th>
-              <th>Edge Banding En1</th>
-              <th>Edge Banding En2</th>
-              <th>Drilling</th>
-              <th>Channel Width</th>
-              <th>Channel Length</th>
-              <th>Part Size Length</th>
-              <th>Part Size Width</th>
-              <th>Macmazze Net Length</th>
-              <th>Macmazze Net Width</th>
-              <th>Notes</th>
+              <th>Bantlama</th>
               <th>Başlama Zamanı</th>
               <th>Bitiş Zamanı</th>
-              <th>Güncelle</th>
             </tr>
           </thead>
           <tbody>
@@ -199,7 +206,7 @@ const Banding = () => {
                 lot.parts
                   .filter((part) =>
                     bandingFilter ? part.banding === bandingFilter : true
-                  ) // Apply the filter here
+                  ) // Apply the filter for banding
                   .map((part, partIndex) => (
                     <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
                       <td>{lot.lotNumber || "No Value"}</td>
@@ -218,23 +225,12 @@ const Banding = () => {
                       <td>{part.totalCount || "No Value"}</td>
                       <td>{part.pvcColor || "No Value"}</td>
                       <td>{part.banding || "No Value"}</td>
-                      <td>{part.edgeBanding?.boy1 || "No Value"}</td>
-                      <td>{part.edgeBanding?.boy2 || "No Value"}</td>
-                      <td>{part.edgeBanding?.en1 || "No Value"}</td>
-                      <td>{part.edgeBanding?.en2 || "No Value"}</td>
-                      <td>{part.drilling || "No Value"}</td>
-                      <td>{part.channel?.width || "No Value"}</td>
-                      <td>{part.channel?.length || "No Value"}</td>
-                      <td>{part.partSize?.length || "No Value"}</td>
-                      <td>{part.partSize?.width || "No Value"}</td>
-                      <td>{part.macmazzeNet?.macmazzeLenght || "No Value"}</td>
-                      <td>{part.macmazzeNet?.macmazzeWidth || "No Value"}</td>
-                      <td>{part.notes || "Açıklama girilmemiş!"}</td>
                       <td>
                         <input
                           type="datetime-local"
                           value={
-                            startTimes[`${lot.lotNumber}-${part.id}`] || ""
+                            startTimes[`${lot.lotNumber}-${part.id}-banding`] ||
+                            ""
                           }
                           onChange={(e) =>
                             handleTimeChange(
@@ -245,11 +241,26 @@ const Banding = () => {
                             )
                           }
                         />
+                        <button
+                          className="btn btn-primary btn-sm mt-1"
+                          onClick={() =>
+                            updatePartStartTime(
+                              lot.lotNumber,
+                              part.id,
+                              "banding"
+                            )
+                          }
+                        >
+                          Başlama Ekle
+                        </button>
                       </td>
                       <td>
                         <input
                           type="datetime-local"
-                          value={endTimes[`${lot.lotNumber}-${part.id}`] || ""}
+                          value={
+                            endTimes[`${lot.lotNumber}-${part.id}-banding`] ||
+                            ""
+                          }
                           onChange={(e) =>
                             handleTimeChange(
                               lot.lotNumber,
@@ -259,25 +270,16 @@ const Banding = () => {
                             )
                           }
                         />
-                      </td>
-                      <td>
                         <button
-                          className="btn btn-primary btn-sm"
+                          className="btn btn-danger btn-sm mt-1"
                           onClick={() =>
-                            updatePartStartTime(lot.lotNumber, part.id)
+                            updatePartEndTime(lot.lotNumber, part.id, "banding")
                           }
                         >
-                          Başlama Zamanı Kaydet
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm mt-1"
-                          onClick={() =>
-                            updatePartEndTime(lot.lotNumber, part.id)
-                          }
-                        >
-                          Bitiş Zamanı Kaydet
+                          Bitiş Ekle
                         </button>
                       </td>
+                      <td></td>
                     </tr>
                   ))
               )
