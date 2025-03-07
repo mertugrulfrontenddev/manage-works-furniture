@@ -225,12 +225,27 @@ const AddPartForm = () => {
             <Form.Group>
               <Form.Label>Malzeme Rengi</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="materialColor"
                 value={part.materialColor}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="18 MM 3660*1830 BEYAZ">
+                  18 MM 3660*1830 BEYAZ
+                </option>{" "}
+                <option value="18 MM 3660*1830 PARLAK BEYAZ">
+                  18 MM 3660*1830 PARLAK BEYAZ
+                </option>
+                <option value="18 MM 3660*1830 ATLANTİK ÇAM SUNTALAM">
+                  18 MM 3660*1830 ATLANTİK ÇAM SUNTALAM
+                </option>
+                <option value="2,7 MM 2100*1700 TY BEYAZ MDF">
+                  2,7 MM 2100*1700 TY BEYAZ MD
+                </option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
               <Form.Label>Pvc Rengi</Form.Label>
               <Form.Control
