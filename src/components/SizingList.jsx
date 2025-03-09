@@ -145,7 +145,12 @@ function SizingList() {
           await updateDoc(docRef, { startDate });
           console.log("Start date updated successfully!");
         } else {
-          await setDoc(docRef, { startDate, lotPlakaKey });
+          await setDoc(docRef, {
+            startDate,
+            lotPlakaKey,
+            plakaTanim,
+            lotNumber,
+          });
           console.log("Start date saved successfully!");
         }
       } else {

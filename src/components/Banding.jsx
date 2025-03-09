@@ -111,6 +111,18 @@ const Banding = () => {
 
   // Fetch products and lots from Firestore
   const fetchLotAndProducts = async () => {
+    // 1. "cutting_operations" koleksiyonundaki verileri sorgulama
+    const cuttingOperationsQuery = query(
+      collection(db, "cutting_operations"),
+      where("ebatlamaTamamlandi", "==", true)
+    );
+    const cuttingOperationsSnapshot = await getDocs(cuttingOperationsQuery);
+    const cuttingOperations = cuttingOperationsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // 2. "lots" koleksiyonundaki verileri sorgulama
     const lotQuery = query(
       collection(db, "lots"),
       where("status", "==", "Üretimde")
@@ -121,12 +133,15 @@ const Banding = () => {
       ...doc.data(),
     }));
 
+    // 3. Ürünleri işle
     const productList = await Promise.all(
       products.map(async (product) => {
+        // 4. Ürünlere ait lotları eşleştir
         const matchedLots = lots.filter(
           (lot) => lot.productCode === product.code
         );
 
+        // 5. Parçaları çek
         const partsCollection = collection(
           db,
           `products/${product.code}/parts`
@@ -137,15 +152,27 @@ const Banding = () => {
           ...doc.data(),
         }));
 
+        // 6. Her lotu, her parça ile eşleştir ve "materialColor" ile karşılaştır
         const lotsWithParts = matchedLots.map((lot) => {
-          const partsWithLot = partsList.map((part) => {
-            return {
+          const partsWithLot = partsList
+            .filter((part) => {
+              // cutting_operations koleksiyonundaki ilgili lot'ları ve plakaTanim'leri bul
+              const matchedOperations = cuttingOperations.filter(
+                (operation) => operation.lotNumber === lot.lotNumber
+              );
+
+              // Eğer eşleşen birden fazla operation varsa, bunlardan en az birinin plakaTanim'inin parça ile eşleşmesi gerek
+              return matchedOperations.some(
+                (operation) => part.materialColor === operation.plakaTanim
+              );
+            })
+            .map((part) => ({
               ...part,
               lotNumber: lot.lotNumber,
               startTime: part.startTime || "", // Firestore'dan gelen zaman
               endTime: part.endTime || "", // Firestore'dan gelen zaman
-            };
-          });
+            }));
+
           return { ...lot, parts: partsWithLot };
         });
 
