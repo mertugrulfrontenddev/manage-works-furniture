@@ -84,6 +84,19 @@ const Drilling = () => {
   };
 
   const fetchLotAndProducts = async () => {
+    // 1. "operations" koleksiyonundaki "type" değeri "banding" ve "bandingEnd" değeri true olan verileri sorgulama
+    const operationsQuery = query(
+      collection(db, "operations"),
+      where("type", "==", "banding"),
+      where("bandingEnd", "==", true)
+    );
+    const operationsSnapshot = await getDocs(operationsQuery);
+    const operationsData = operationsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // 2. "lots" koleksiyonundaki verileri sorgulama
     const lotQuery = query(
       collection(db, "lots"),
       where("status", "==", "Üretimde")
@@ -94,12 +107,15 @@ const Drilling = () => {
       ...doc.data(),
     }));
 
+    // 3. Ürünleri işle
     const productList = await Promise.all(
       products.map(async (product) => {
+        // 4. Ürünlere ait lotları eşleştir
         const matchedLots = lots.filter(
           (lot) => lot.productCode === product.code
         );
 
+        // 5. Parçaları çek
         const partsCollection = collection(
           db,
           `products/${product.code}/parts`
@@ -110,11 +126,27 @@ const Drilling = () => {
           ...doc.data(),
         }));
 
+        // 6. Her lotu, her parça ile eşleştir ve operationsData ile karşılaştır
         const lotsWithParts = matchedLots.map((lot) => {
-          const partsWithLot = partsList.map((part) => ({
-            ...part,
-            lotNumber: lot.lotNumber,
-          }));
+          const partsWithLot = partsList
+            .filter((part) => {
+              // operations koleksiyonundaki ilgili lotNumber ve partId'leri bul
+              const matchedOperations = operationsData.filter(
+                (operation) =>
+                  operation.lotNumber === lot.lotNumber &&
+                  operation.partId === part.id
+              );
+
+              // Eğer eşleşen operation varsa, işlemi dahil et
+              return matchedOperations.length > 0;
+            })
+            .map((part) => ({
+              ...part,
+              lotNumber: lot.lotNumber,
+              startTime: part.startTime || "", // Firestore'dan gelen zaman
+              endTime: part.endTime || "", // Firestore'dan gelen zaman
+            }));
+
           return { ...lot, parts: partsWithLot };
         });
 

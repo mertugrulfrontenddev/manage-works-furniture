@@ -81,7 +81,8 @@ const Banding = () => {
       lotNumber,
       partId,
       startTime,
-      type, // type is "banding" here
+      type,
+      bandingEnd: false, // type is "banding" here
       timestamp: new Date(),
     });
   };
@@ -106,6 +107,7 @@ const Banding = () => {
     await updateDoc(operationRef, {
       endTime,
       timestamp: new Date(),
+      bandingEnd: true,
     });
   };
 
