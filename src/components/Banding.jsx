@@ -181,8 +181,19 @@ const Banding = () => {
         return { ...product, lots: lotsWithParts };
       })
     );
-
-    setProductsWithLots(productList);
+    const sortedProductList = productList.map((product) => ({
+      ...product,
+      lots: product.lots.sort((a, b) => {
+        if (
+          typeof a.lotNumber === "string" &&
+          typeof b.lotNumber === "string"
+        ) {
+          return a.lotNumber.localeCompare(b.lotNumber); // Eğer string ise
+        }
+        return a.lotNumber - b.lotNumber; // Eğer number ise
+      }),
+    }));
+    setProductsWithLots(sortedProductList);
   };
 
   useEffect(() => {
@@ -219,11 +230,11 @@ const Banding = () => {
               <th>Parça Adı</th>
               <th>Paket No</th>
               <th>Cinsi</th>
-              <th>Material Color</th>
-              <th>Thickness</th>
-              <th>Unit Count</th>
-              <th>Total Count</th>
-              <th>PVC Color</th>
+              <th>Malzeme Rengi</th>
+              <th>Kalınlık</th>
+              <th>Birim Adet</th>
+              <th>Toplam Adet</th>
+              <th>PVC Rengi</th>
               <th>Bantlama</th>
               <th>Başlama Zamanı</th>
               <th>Bitiş Zamanı</th>
