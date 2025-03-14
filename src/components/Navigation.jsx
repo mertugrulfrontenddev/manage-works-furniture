@@ -75,7 +75,30 @@ function Navigation() {
                 </li>
               </ul>
             </li>
-
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="ekleDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Silme İşlemleri
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="ekleDropdown">
+                <li>
+                  <Link className="dropdown-item" to="/partdelete">
+                    Parça Sil
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/partadd">
+                    Ürün Sil
+                  </Link>
+                </li>
+              </ul>
+            </li>
             {/* İş Emri Listesi */}
             <li className="nav-item">
               <Link className="nav-link" to="/">

@@ -11,6 +11,7 @@ import Banding from "./components/Banding";
 import Drilling from "./components/Drilling";
 import Sizing from "./components/Sizing";
 import SizingList from "./components/SizingList";
+import PartDelete from "./components/PartDelete";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/sizinglist" element={<SizingList />} />
           <Route path="/banding" element={<Banding />} />
           <Route path="/drilling" element={<Drilling />} />
+          <Route path="/partdelete" element={<PartDelete />} />
         </Routes>
       </Router>
     </LotProvider>

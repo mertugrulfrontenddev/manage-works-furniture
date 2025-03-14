@@ -36,3 +36,69 @@
     transform: rotate(360deg);
   }
 }
+
+/* Hover efekti */
+/* Normalde kartlar biraz daha küçük olacak */
+.custom-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transform: scale(0.95); /* Normalde kartı biraz küçültüyoruz */
+  border-radius: 10px;
+}
+
+/* Hover durumunda büyüme etkisi */
+.custom-card:hover {
+  transform: scale(1); /* Hoverda normal boyuta gelir */
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2); /* Hoverda daha büyük gölge */
+}
+
+/* Kartın başlık kısmı */
+.custom-card .card-title {
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 0;
+  text-align: center;
+}
+
+/* Kartın body kısmı */
+.custom-card .card-body {
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.custom-card .card-body.bg-light {
+  background-color: #d3e9ffd2 !important;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%; /* Tüm ekranı kaplaması için */
+  left: 0;
+  top: 0;
+  background-color: #282c348e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay-content {
+  position: relative;
+  background-color: white;
+  border: 1px solid grey;
+  padding: 30px;
+  width: 40%; /* İstenirse genişlik ayarlanabilir */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-overlay {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+
+.close-overlay:hover {
+  color: red;
+  cursor: pointer;
+}
