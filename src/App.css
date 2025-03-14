@@ -88,7 +88,7 @@
   background-color: white;
   border: 1px solid grey;
   padding: 30px;
-  width: 40%; /* İstenirse genişlik ayarlanabilir */
+  width: 65%; /* İstenirse genişlik ayarlanabilir */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
