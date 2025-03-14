@@ -198,7 +198,7 @@ const PartDelete = () => {
                 handleDeletePart(selectedPart.id);
               }}
             >
-              Parçayı Sil
+              Sil
             </Button>
             <Button
               variant="success"
