@@ -179,14 +179,20 @@ const AddPartForm = () => {
                 <option value="5/4">5/4</option>
               </Form.Control>
             </Form.Group>
+
             <Form.Group>
-              <Form.Label>Cinsi</Form.Label>
+              <Form.Label>cinsi</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="cinsi"
                 value={part.cinsi}
                 onChange={handleChange}
-              />
+                required
+              >
+                <option value="">Paket No Seçiniz</option>
+                <option value="Suntalam">Suntalam</option>
+                <option value="MDF">MDF</option>
+              </Form.Control>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -231,30 +237,39 @@ const AddPartForm = () => {
                 onChange={handleChange}
               >
                 <option value="">Seçiniz</option>
-                <option value="18 MM 3660*1830 BEYAZ">
-                  18 MM 3660*1830 BEYAZ
+                <option value="18 MM ATLANTİK ÇAM">
+                  18 MM ATLANTİK ÇAM
                 </option>{" "}
-                <option value="18 MM 3660*1830 PARLAK BEYAZ">
-                  18 MM 3660*1830 PARLAK BEYAZ
-                </option>
-                <option value="18 MM 3660*1830 ATLANTİK ÇAM SUNTALAM">
-                  18 MM 3660*1830 ATLANTİK ÇAM SUNTALAM
-                </option>
-                <option value="2,7 MM 2100*1700 TY BEYAZ MDF">
-                  2,7 MM 2100*1700 TY BEYAZ MD
-                </option>
+                <option value="18 MM BEYAZ">18 MM BEYAZ</option>
+                <option value="18 MM PARLAK BEYAZ">18 MM PARLAK BEYAZ</option>
+                <option value="18 MM MİLAS CEVİZ">18 MM MİLAS CEVİZ</option>
+                <option value="18 MM AKÇA AĞAÇ">18 MM AKÇA AĞAÇ</option>
+                <option value="18 MM BAROK CEVİZ">18 MM BAROK CEVİZ</option>
+                <option value="18 MM WOOD BEYAZ">18 MM WOOD BEYAZ</option>
+                <option value="18 MM TEK YÜZ MDF">18 MM TEK YÜZ MDF</option>
+                <option value="8 MM BEYAZ">8 MM BEYAZ</option>
+                <option value="2,7 MM MDF ARKALIK">2,7 MM MDF ARKALIK</option>
               </Form.Control>
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Pvc Rengi</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="pvcColor"
                 value={part.pvcColor}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Pvc Rengi Seçiniz</option>
+                <option value="ATLANTİK ÇAM">ATLANTİK ÇAM</option>{" "}
+                <option value="BEYAZ">BEYAZ</option>
+                <option value=" MİLAS CEVİZ">MİLAS CEVİZ</option>
+                <option value="AKÇA AĞAÇ">AKÇA AĞAÇ</option>
+                <option value="BAROK CEVİZ">BAROK CEVİZ</option>
+                <option value="WOOD BEYAZ">WOOD BEYAZ</option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
               <Form.Label>Macmazze Boyutları</Form.Label>
               <Row>

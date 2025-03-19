@@ -184,15 +184,20 @@ const Banding = () => {
     const sortedProductList = productList.map((product) => ({
       ...product,
       lots: product.lots.sort((a, b) => {
-        if (
-          typeof a.lotNumber === "string" &&
+        // Eğer lotNumber bir string ise, sayıya dönüştür ve karşılaştır
+        const lotNumberA =
+          typeof a.lotNumber === "string"
+            ? parseFloat(a.lotNumber)
+            : a.lotNumber;
+        const lotNumberB =
           typeof b.lotNumber === "string"
-        ) {
-          return a.lotNumber.localeCompare(b.lotNumber); // Eğer string ise
-        }
-        return a.lotNumber - b.lotNumber; // Eğer number ise
+            ? parseFloat(b.lotNumber)
+            : b.lotNumber;
+
+        return lotNumberA - lotNumberB; // Sayısal sıralama
       }),
     }));
+
     setProductsWithLots(sortedProductList);
   };
 

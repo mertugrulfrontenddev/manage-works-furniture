@@ -102,3 +102,42 @@
   color: red;
   cursor: pointer;
 }
+
+.form-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 350px; /* Form genişliği */
+  z-index: 1000; /* Diğer öğelerin üstünde yer alması için */
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.table-container {
+  margin-left: 0; /* Sol ve sağdaki tüm boşlukları kaldırıyoruz */
+  padding-right: 220px; /* Formun genişliği kadar sağa kaydırıyoruz */
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding-right: 0; /* Ekran küçüldüğünde sağdaki kaydırmayı kaldırıyoruz */
+  }
+
+  .form-container {
+    position: relative; /* Sabit değil, normal akışa dahil olacak şekilde konumlandırıyoruz */
+    width: 100%; /* Form ekranın tamamını kaplasın */
+    right: 0; /* Form sola kayacak */
+    top: 10px; /* Üstten biraz boşluk bırakıyoruz */
+    margin-top: 20px; /* Yukarıya biraz boşluk ekliyoruz */
+  }
+
+  /* Tabloyu ekran boyutuna göre hizalama */
+  .table-container table {
+    width: 100%; /* Tablo genişliğini ekran boyutuna göre ayarlıyoruz */
+    table-layout: auto; /* Tabloyu daha esnek hale getiriyoruz */
+  }
+}

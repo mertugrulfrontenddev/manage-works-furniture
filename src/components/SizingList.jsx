@@ -231,10 +231,11 @@ function SizingList() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "#f4f4f4", fontWeight: "bold" }}>
+              <th style={thStyle}>Lot Number</th>
               <th style={thStyle}>Product Code</th>
               <th style={thStyle}>Product Name</th>
-              <th style={thStyle}>Lot Number</th>
               <th style={thStyle}>Plaka Tanım</th>
+              <th style={thStyle}>Plaka Ölçüsü</th>
               <th style={thStyle}>Plaka Adeti</th>
               <th style={thStyle}>Lot Adet</th>
               <th style={thStyle}>Başlama Zamanı</th>
@@ -257,10 +258,12 @@ function SizingList() {
                         : "transparent", // Eğer tamamlandıysa yeşil
                     }}
                   >
+                    <td style={tdStyle}>{data.lotNumber}</td>
                     <td style={tdStyle}>{data.productCode}</td>
                     <td style={tdStyle}>{data.productName}</td>
-                    <td style={tdStyle}>{data.lotNumber}</td>
+
                     <td style={tdStyle}>{size.plakaTanim}</td>
+                    <td style={tdStyle}>{size.plakaOlcu}</td>
                     <td style={tdStyle}>{size.plakaAdeti}</td>
                     <td style={tdStyle}>{size.lotAdet}</td>
                     <td style={tdStyle}>
