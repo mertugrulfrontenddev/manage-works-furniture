@@ -249,68 +249,62 @@ function SizingList() {
                 const isCompleted =
                   cuttingOperations[lotPlakaKey]?.ebatlamaTamamlandi;
                 return (
-                  <tr
-                    key={`${index}-${idx}`}
-                    style={{
-                      ...trStyle,
-                      backgroundColor: isCompleted
-                        ? "lightgreen"
-                        : "transparent", // Eğer tamamlandıysa yeşil
-                    }}
-                  >
-                    <td style={tdStyle}>{data.lotNumber}</td>
-                    <td style={tdStyle}>{data.productCode}</td>
-                    <td style={tdStyle}>{data.productName}</td>
+                  !isCompleted && (
+                    <tr key={`${index}-${idx}`} style={{ ...trStyle }}>
+                      <td style={tdStyle}>{data.lotNumber}</td>
+                      <td style={tdStyle}>{data.productCode}</td>
+                      <td style={tdStyle}>{data.productName}</td>
 
-                    <td style={tdStyle}>{size.plakaTanim}</td>
-                    <td style={tdStyle}>{size.plakaOlcu}</td>
-                    <td style={tdStyle}>{size.plakaAdeti}</td>
-                    <td style={tdStyle}>{size.lotAdet}</td>
-                    <td style={tdStyle}>
-                      <input
-                        type="datetime-local"
-                        value={dates[lotPlakaKey]?.startDate || ""}
-                        onChange={(e) =>
-                          handleDateChange(
-                            data.lotNumber,
-                            size.plakaTanim,
-                            "startDate",
-                            e.target.value
-                          )
-                        }
-                      />
-                      <button
-                        className="btn btn-primary"
-                        onClick={() =>
-                          handleSaveStartDate(data.lotNumber, size.plakaTanim)
-                        }
-                      >
-                        Başla
-                      </button>
-                    </td>
-                    <td style={tdStyle}>
-                      <input
-                        type="datetime-local"
-                        value={dates[lotPlakaKey]?.endDate || ""}
-                        onChange={(e) =>
-                          handleDateChange(
-                            data.lotNumber,
-                            size.plakaTanim,
-                            "endDate",
-                            e.target.value
-                          )
-                        }
-                      />
-                      <button
-                        className="btn btn-danger "
-                        onClick={() =>
-                          handleSaveEndDate(data.lotNumber, size.plakaTanim)
-                        }
-                      >
-                        Bitir
-                      </button>
-                    </td>
-                  </tr>
+                      <td style={tdStyle}>{size.plakaTanim}</td>
+                      <td style={tdStyle}>{size.plakaOlcu}</td>
+                      <td style={tdStyle}>{size.plakaAdeti}</td>
+                      <td style={tdStyle}>{size.lotAdet}</td>
+                      <td style={tdStyle}>
+                        <input
+                          type="datetime-local"
+                          value={dates[lotPlakaKey]?.startDate || ""}
+                          onChange={(e) =>
+                            handleDateChange(
+                              data.lotNumber,
+                              size.plakaTanim,
+                              "startDate",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <button
+                          className="btn btn-primary"
+                          onClick={() =>
+                            handleSaveStartDate(data.lotNumber, size.plakaTanim)
+                          }
+                        >
+                          Başla
+                        </button>
+                      </td>
+                      <td style={tdStyle}>
+                        <input
+                          type="datetime-local"
+                          value={dates[lotPlakaKey]?.endDate || ""}
+                          onChange={(e) =>
+                            handleDateChange(
+                              data.lotNumber,
+                              size.plakaTanim,
+                              "endDate",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <button
+                          className="btn btn-danger "
+                          onClick={() =>
+                            handleSaveEndDate(data.lotNumber, size.plakaTanim)
+                          }
+                        >
+                          Bitir
+                        </button>
+                      </td>
+                    </tr>
+                  )
                 );
               })
             )}

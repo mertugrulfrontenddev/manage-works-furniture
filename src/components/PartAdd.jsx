@@ -30,7 +30,7 @@ const AddPartForm = () => {
       boy2: "",
     },
     drilling: "",
-    channel: { length: "", width: "" },
+    channel: "",
     partSize: { length: "", width: "" },
     notes: "",
   });
@@ -101,7 +101,7 @@ const AddPartForm = () => {
           boy2: "",
         },
         drilling: "",
-        channel: { length: "", width: "" },
+        channel: "",
         partSize: { length: "", width: "" },
         notes: "",
       });
@@ -181,7 +181,7 @@ const AddPartForm = () => {
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>cinsi</Form.Label>
+              <Form.Label>Cinsi</Form.Label>
               <Form.Control
                 as="select"
                 name="cinsi"
@@ -294,25 +294,20 @@ const AddPartForm = () => {
               </Row>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Kanal Boyutları</Form.Label>
+              <Form.Label>Kanal Boyu</Form.Label>
               <Row>
                 <Col>
-                  <Form.Label>Boy</Form.Label>
                   <Form.Control
-                    type="text"
-                    name="length"
-                    value={part.channel.length}
-                    onChange={(e) => handleNestedChange(e, "channel")}
-                  />
-                </Col>
-                <Col>
-                  <Form.Label>En</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="width"
-                    value={part.channel.width}
-                    onChange={(e) => handleNestedChange(e, "channel")}
-                  />
+                    as="select"
+                    name="channel"
+                    value={part.channel}
+                    onChange={handleChange}
+                  >
+                    <option value="">Kanal Boyu Seçiniz</option>
+                    <option value="Tam Kanal">Tam Kanal</option>
+                    <option value="İki Kanal">İki Kanal</option>
+                    <option value="Dal Kanal">Dal Kanal</option>
+                  </Form.Control>
                 </Col>
               </Row>
             </Form.Group>
@@ -349,40 +344,59 @@ const AddPartForm = () => {
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>Kenar Bandı(Boy1)</Form.Label>
+              <Form.Label>Kenar Bandı (Boy1)</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="boy1"
                 value={part.edgeBanding.boy1}
                 onChange={handleEdgeBandingChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="0.4">0.4</option>
+                <option value="0.8">0.8</option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
-              <Form.Label>Kenar Bandı(Boy2)</Form.Label>
+              <Form.Label>Kenar Bandı (Boy2)</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="boy2"
                 value={part.edgeBanding.boy2}
                 onChange={handleEdgeBandingChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="0.4">0.4</option>
+                <option value="0.8">0.8</option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
-              <Form.Label>Kenar Bandı(En1)</Form.Label>
+              <Form.Label>Kenar Bandı (En1)</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="en1"
                 value={part.edgeBanding.en1}
                 onChange={handleEdgeBandingChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="0.4">0.4</option>
+                <option value="0.8">0.8</option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
               <Form.Label>Kenar Bandı (En2)</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="en2"
                 value={part.edgeBanding.en2}
                 onChange={handleEdgeBandingChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="0.4">0.4</option>
+                <option value="0.8">0.8</option>
+              </Form.Control>
             </Form.Group>
           </Col>
         </Row>

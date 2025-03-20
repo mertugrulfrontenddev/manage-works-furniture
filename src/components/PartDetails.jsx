@@ -160,9 +160,7 @@ function PartDetails() {
                           </p>
 
                           <p>
-                            <strong>Kanal:</strong> Boy:{" "}
-                            {part.channel ? part.channel.length : "No Length"} x
-                            En: {part.channel ? part.channel.width : "No Width"}
+                            <strong>Kanal:</strong> {part.channel}
                           </p>
                           <p>
                             <strong>Parça Ölçüsü:</strong>{" "}
@@ -184,7 +182,7 @@ function PartDetails() {
 
                           <p>
                             <strong>Açıklama:</strong>{" "}
-                            {part.notes || "No additional notes"}
+                            {part.notes || "Bu parça için açıklama eklenmemiş"}
                           </p>
                         </Col>
                       </Row>

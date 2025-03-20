@@ -8,6 +8,7 @@ import {
   setDoc,
   updateDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,7 +19,7 @@ const Banding = () => {
   const [startTimes, setStartTimes] = useState({});
   const [endTimes, setEndTimes] = useState({});
   const [bandingFilter, setBandingFilter] = useState(""); // Add filter state for banding
-
+  const [operations, setOperations] = useState({});
   const handleTimeChange = (lotNumber, partId, type, value) => {
     if (type === "start") {
       setStartTimes((prev) => ({
@@ -83,6 +84,7 @@ const Banding = () => {
       startTime,
       type,
       bandingEnd: false, // type is "banding" here
+      operationKey: lotNumber + "-" + partId + "-banding",
       timestamp: new Date(),
     });
   };
@@ -206,6 +208,21 @@ const Banding = () => {
     fetchSavedTimes(); // Fetch saved times on component mount
   }, [products]);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "operations"),
+      (querySnapshot) => {
+        const operations = {};
+        querySnapshot.forEach((doc) => {
+          operations[doc.id] = doc.data();
+        });
+        setOperations(operations); // Veriyi güncelle
+      }
+    );
+
+    // Unsubscribe (temizleme) işlemi
+    return () => unsubscribe();
+  }, []);
   return (
     <div className="container mt-4">
       <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar (Bantlama)</h3>
@@ -252,81 +269,96 @@ const Banding = () => {
                   .filter((part) =>
                     bandingFilter ? part.banding === bandingFilter : true
                   ) // Apply the filter for banding
-                  .map((part, partIndex) => (
-                    <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
-                      <td>{lot.lotNumber || "No Value"}</td>
-                      <td>
-                        {partIndex === 0 ? product.name || "No Value" : ""}
-                      </td>
-                      <td>
-                        {partIndex === 0 ? product.code || "No Value" : ""}
-                      </td>
-                      <td>{part.partName || "No Value"}</td>
-                      <td>{part.paketNo || "No Value"}</td>
-                      <td>{part.cinsi || "No Value"}</td>
-                      <td>{part.materialColor || "No Value"}</td>
-                      <td>{part.thickness || "No Value"}</td>
-                      <td>{part.unitCount || "No Value"}</td>
-                      <td>{part.totalCount || "No Value"}</td>
-                      <td>{part.pvcColor || "No Value"}</td>
-                      <td>{part.banding || "No Value"}</td>
-                      <td>
-                        <input
-                          type="datetime-local"
-                          value={
-                            startTimes[`${lot.lotNumber}-${part.id}-banding`] ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleTimeChange(
-                              lot.lotNumber,
-                              part.id,
-                              "start",
-                              e.target.value
-                            )
-                          }
-                        />
-                        <button
-                          className="btn btn-primary btn-sm mt-1"
-                          onClick={() =>
-                            updatePartStartTime(
-                              lot.lotNumber,
-                              part.id,
-                              "banding"
-                            )
-                          }
-                        >
-                          Başlama Ekle
-                        </button>
-                      </td>
-                      <td>
-                        <input
-                          type="datetime-local"
-                          value={
-                            endTimes[`${lot.lotNumber}-${part.id}-banding`] ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleTimeChange(
-                              lot.lotNumber,
-                              part.id,
-                              "end",
-                              e.target.value
-                            )
-                          }
-                        />
-                        <button
-                          className="btn btn-danger btn-sm mt-1"
-                          onClick={() =>
-                            updatePartEndTime(lot.lotNumber, part.id, "banding")
-                          }
-                        >
-                          Bitiş Ekle
-                        </button>
-                      </td>
-                      <td></td>
-                    </tr>
-                  ))
+                  .map((part, partIndex) => {
+                    const isComplete =
+                      operations[`${lot.lotNumber}-${part.id}-banding`]
+                        ?.bandingEnd;
+                    return (
+                      !isComplete && (
+                        <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
+                          <td>
+                            {lot.lotNumber || "No Value"} {}
+                          </td>
+                          <td>
+                            {partIndex === 0 ? product.name || "No Value" : ""}
+                          </td>
+                          <td>
+                            {partIndex === 0 ? product.code || "No Value" : ""}
+                          </td>
+                          <td>{part.partName || "No Value"} </td>
+                          <td>{part.paketNo || "No Value"}</td>
+                          <td>{part.cinsi || "No Value"}</td>
+                          <td>{part.materialColor || "No Value"}</td>
+                          <td>{part.thickness || "No Value"}</td>
+                          <td>{part.unitCount || "No Value"}</td>
+                          <td>{part.totalCount || "No Value"}</td>
+                          <td>{part.pvcColor || "No Value"}</td>
+                          <td>{part.banding || "No Value"}</td>
+                          <td>
+                            <input
+                              type="datetime-local"
+                              value={
+                                startTimes[
+                                  `${lot.lotNumber}-${part.id}-banding`
+                                ] || ""
+                              }
+                              onChange={(e) =>
+                                handleTimeChange(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "start",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <button
+                              className="btn btn-primary btn-sm mt-1"
+                              onClick={() =>
+                                updatePartStartTime(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "banding"
+                                )
+                              }
+                            >
+                              Başlama Ekle
+                            </button>
+                          </td>
+                          <td>
+                            <input
+                              type="datetime-local"
+                              value={
+                                endTimes[
+                                  `${lot.lotNumber}-${part.id}-banding`
+                                ] || ""
+                              }
+                              onChange={(e) =>
+                                handleTimeChange(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "end",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <button
+                              className="btn btn-danger btn-sm mt-1"
+                              onClick={() =>
+                                updatePartEndTime(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "banding"
+                                )
+                              }
+                            >
+                              Bitiş Ekle
+                            </button>
+                          </td>
+                          <td></td>
+                        </tr>
+                      )
+                    );
+                  })
               )
             )}
           </tbody>

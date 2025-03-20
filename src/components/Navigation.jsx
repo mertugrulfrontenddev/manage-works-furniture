@@ -59,11 +59,6 @@ function Navigation() {
               </a>
               <ul className="dropdown-menu" aria-labelledby="ekleDropdown">
                 <li>
-                  <Link className="dropdown-item" to="/lotform">
-                    İş Emri Ekle
-                  </Link>
-                </li>
-                <li>
                   <Link className="dropdown-item" to="/partadd">
                     Parça Ekle
                   </Link>
@@ -71,6 +66,11 @@ function Navigation() {
                 <li>
                   <Link className="dropdown-item" to="/sizing">
                     Ebat Ekle
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/lotform">
+                    İş Emri Ekle
                   </Link>
                 </li>
               </ul>
