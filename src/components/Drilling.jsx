@@ -8,6 +8,7 @@ import {
   setDoc,
   updateDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 import { LotContext } from "../context/LotContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,6 +19,8 @@ const Drilling = () => {
   const [startTimes, setStartTimes] = useState({});
   const [endTimes, setEndTimes] = useState({});
   const [drillingFilter, setDrillingFilter] = useState("");
+
+  const [operations, setOperations] = useState({});
 
   const handleTimeChange = (lotNumber, partId, type, value) => {
     const key = `${lotNumber}-${partId}-delme`;
@@ -61,6 +64,7 @@ const Drilling = () => {
       lotNumber,
       partId,
       startTime,
+      delmeEnd: false,
       type: "delme",
       timestamp: new Date(),
     });
@@ -80,6 +84,7 @@ const Drilling = () => {
     await updateDoc(operationRef, {
       endTime,
       timestamp: new Date(),
+      delmeEnd: true,
     });
   };
 
@@ -175,6 +180,23 @@ const Drilling = () => {
     fetchSavedTimes();
   }, [products]);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "operations"),
+      (querySnaphot) => {
+        const operations = {};
+
+        querySnaphot.forEach((doc) => {
+          operations[doc.id] = doc.data();
+        });
+
+        setOperations(operations);
+      }
+    );
+    // Unsubscribe (temizleme) işlemi
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="container mt-4">
       <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar (Delme)</h3>
@@ -222,75 +244,84 @@ const Drilling = () => {
                   .filter((part) =>
                     drillingFilter ? part.drilling === drillingFilter : true
                   ) // Apply the filter here
-                  .map((part, partIndex) => (
-                    <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
-                      <td>{lot.lotNumber || "No Value"}</td>
-                      <td>
-                        {partIndex === 0 ? product.name || "No Value" : ""}
-                      </td>
-                      <td>
-                        {partIndex === 0 ? product.code || "No Value" : ""}
-                      </td>
-                      <td>{part.partName || "No Value"}</td>
-                      <td>{part.paketNo || "No Value"}</td>
-                      <td>{part.cinsi || "No Value"}</td>
-                      <td>{part.materialColor || "No Value"}</td>
-                      <td>{part.thickness || "No Value"}</td>
-                      <td>{part.unitCount || "No Value"}</td>
-                      <td>{part.totalCount || "No Value"}</td>
-                      <td>{part.pvcColor || "No Value"}</td>
-                      <td>{part.drilling || "No Value"}</td>
-                      <td>
-                        <input
-                          type="datetime-local"
-                          value={
-                            startTimes[`${lot.lotNumber}-${part.id}-delme`] ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleTimeChange(
-                              lot.lotNumber,
-                              part.id,
-                              "start",
-                              e.target.value
-                            )
-                          }
-                        />
-                        <button
-                          className="btn btn-primary btn-sm mt-1"
-                          onClick={() =>
-                            updatePartStartTime(lot.lotNumber, part.id)
-                          }
-                        >
-                          Başlama Kaydet
-                        </button>
-                      </td>
-                      <td>
-                        <input
-                          type="datetime-local"
-                          value={
-                            endTimes[`${lot.lotNumber}-${part.id}-delme`] || ""
-                          }
-                          onChange={(e) =>
-                            handleTimeChange(
-                              lot.lotNumber,
-                              part.id,
-                              "end",
-                              e.target.value
-                            )
-                          }
-                        />
-                        <button
-                          className="btn btn-danger btn-sm mt-1"
-                          onClick={() =>
-                            updatePartEndTime(lot.lotNumber, part.id)
-                          }
-                        >
-                          Bitiş Kaydet
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  .map((part, partIndex) => {
+                    const isComplete =
+                      operations[`${lot.lotNumber}-${part.id}-delme`]
+                        ?.delmeEnd;
+                    return (
+                      !isComplete && (
+                        <tr key={`${product.code}-${lotIndex}-${partIndex}`}>
+                          <td>{lot.lotNumber || "No Value"}</td>
+                          <td>
+                            {partIndex === 0 ? product.name || "No Value" : ""}
+                          </td>
+                          <td>
+                            {partIndex === 0 ? product.code || "No Value" : ""}
+                          </td>
+                          <td>{part.partName || "No Value"}</td>
+                          <td>{part.paketNo || "No Value"}</td>
+                          <td>{part.cinsi || "No Value"}</td>
+                          <td>{part.materialColor || "No Value"}</td>
+                          <td>{part.thickness || "No Value"}</td>
+                          <td>{part.unitCount || "No Value"}</td>
+                          <td>{part.totalCount || "No Value"}</td>
+                          <td>{part.pvcColor || "No Value"}</td>
+                          <td>{part.drilling || "No Value"}</td>
+                          <td>
+                            <input
+                              type="datetime-local"
+                              value={
+                                startTimes[
+                                  `${lot.lotNumber}-${part.id}-delme`
+                                ] || ""
+                              }
+                              onChange={(e) =>
+                                handleTimeChange(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "start",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <button
+                              className="btn btn-primary btn-sm mt-1"
+                              onClick={() =>
+                                updatePartStartTime(lot.lotNumber, part.id)
+                              }
+                            >
+                              Başlama Kaydet
+                            </button>
+                          </td>
+                          <td>
+                            <input
+                              type="datetime-local"
+                              value={
+                                endTimes[`${lot.lotNumber}-${part.id}-delme`] ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                handleTimeChange(
+                                  lot.lotNumber,
+                                  part.id,
+                                  "end",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <button
+                              className="btn btn-danger btn-sm mt-1"
+                              onClick={() =>
+                                updatePartEndTime(lot.lotNumber, part.id)
+                              }
+                            >
+                              Bitiş Kaydet
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    );
+                  })
               )
             )}
           </tbody>
