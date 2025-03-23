@@ -246,8 +246,7 @@ const Drilling = () => {
                   ) // Apply the filter here
                   .map((part, partIndex) => {
                     const isComplete =
-                      operations[`${lot.lotNumber}-${part.id}-delme`]
-                        ?.delmeEnd;
+                      operations[`${lot.lotNumber}-${part.id}-delme`]?.delmeEnd;
                     return (
                       !isComplete && (
                         <tr key={`${product.code}-${lotIndex}-${partIndex}`}>

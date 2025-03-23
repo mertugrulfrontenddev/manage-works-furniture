@@ -132,7 +132,7 @@ function SizingList() {
   }, []);
 
   // Save start date to Firebase
-  const handleSaveStartDate = async (lotNumber, plakaTanim) => {
+  const handleSaveStartDate = async (lotNumber, plakaTanim, lotAdet) => {
     try {
       const lotPlakaKey = `${lotNumber}-${plakaTanim}`;
       const { startDate } = dates[lotPlakaKey] || {};
@@ -150,6 +150,7 @@ function SizingList() {
             lotPlakaKey,
             plakaTanim,
             lotNumber,
+            lotAdet,
           });
           console.log("Start date saved successfully!");
         }
@@ -275,7 +276,11 @@ function SizingList() {
                         <button
                           className="btn btn-primary"
                           onClick={() =>
-                            handleSaveStartDate(data.lotNumber, size.plakaTanim)
+                            handleSaveStartDate(
+                              data.lotNumber,
+                              size.plakaTanim,
+                              size.lotAdet
+                            )
                           }
                         >
                           Başla

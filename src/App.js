@@ -13,7 +13,7 @@ import Sizing from "./components/Sizing";
 import SizingList from "./components/SizingList";
 import PartDelete from "./components/PartDelete";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
+import SizingHistory from "./components/SizingHistory";
 function App() {
   return (
     <LotProvider>
@@ -36,6 +36,7 @@ function App() {
           <Route path="/banding" element={<Banding />} />
           <Route path="/drilling" element={<Drilling />} />
           <Route path="/partdelete" element={<PartDelete />} />
+          <Route path="/sizinghistory" element={<SizingHistory />} />
         </Routes>
       </Router>
     </LotProvider>

@@ -143,6 +143,35 @@ function Navigation() {
                 </li>
               </ul>
             </li>
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="uretimDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Üretim Geçmişi
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="uretimDropdown">
+                <li>
+                  <Link className="dropdown-item" to="/sizinghistory">
+                    Ebatlama Geçmişi
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/banding">
+                    Bantlama Geçmişi
+                  </Link>
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/drilling">
+                    Delik Geçmişi
+                  </Link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
