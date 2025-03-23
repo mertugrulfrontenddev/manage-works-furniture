@@ -109,7 +109,7 @@ const SizingHistory = () => {
     <div className="container my-4">
       {activeLots.length === 0 ? (
         <div className="alert alert-warning" role="alert">
-          No active lots found.
+          Geçmişte Yapılmış Ebatlama Bilgisi Bulunamadı!!!
         </div>
       ) : (
         <table className="table table-bordered">
