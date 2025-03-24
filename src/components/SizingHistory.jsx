@@ -112,7 +112,7 @@ const SizingHistory = () => {
           Geçmişte Yapılmış Ebatlama Bilgisi Bulunamadı!!!
         </div>
       ) : (
-        <table className="table table-bordered">
+        <table className="table table-bordered " style={{ fontSize: "13px" }}>
           <thead>
             <tr>
               <th>Lot Number</th>
@@ -122,7 +122,8 @@ const SizingHistory = () => {
               <th>Plaka Ölçüsü</th>
               <th>Plaka Adeti</th>
               <th>Lot Adet</th>
-              <th>Ebatlama Tarih</th>
+              <th>Ebatlama Başlama</th>
+              <th>Ebatlama Bitiş</th>
             </tr>
           </thead>
           <tbody>
@@ -151,8 +152,16 @@ const SizingHistory = () => {
                     {size.cuttingOperations &&
                       size.cuttingOperations.map((op, idx) => (
                         <div key={idx}>
-                          <div>{formatDate(op.startDate)}</div>
-                          <div>{formatDate(op.endDate)}</div>
+                          <td>{formatDate(op.startDate)}</td>
+                        </div>
+                      ))}
+                  </td>
+
+                  <td>
+                    {size.cuttingOperations &&
+                      size.cuttingOperations.map((op, idx) => (
+                        <div key={idx}>
+                          <td>{formatDate(op.endDate)}</td>
                         </div>
                       ))}
                   </td>
