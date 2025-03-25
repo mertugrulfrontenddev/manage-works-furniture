@@ -115,8 +115,8 @@ const Sizing = () => {
     <Container>
       <Row className="justify-content-center">
         <Col md={11}>
-          <h3>Ürünler ve Boyutları</h3>
           <div className="table-container">
+            <h2 className="bg-primary text-white p-2 fw-light"> Ebatlar</h2>
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -125,6 +125,7 @@ const Sizing = () => {
 
                   <th>Plaka Tanım</th>
                   <th>Plaka Adeti</th>
+                  <th>Lot Adeti</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,6 +138,7 @@ const Sizing = () => {
 
                         <td>{size.plakaTanim}</td>
                         <td>{size.plakaAdeti}</td>
+                        <td>{size.lotAdet}</td>
                       </tr>
                     ))
                   ) : (

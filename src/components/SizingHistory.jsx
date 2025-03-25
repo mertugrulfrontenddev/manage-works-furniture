@@ -128,41 +128,118 @@ const SizingHistory = () => {
             </tr>
           </thead>
           <tbody>
-            {activeLots.map((lot) => {
+            {activeLots.map((lot, lotIndex) => {
               // Her lot için boyut sayısını al
               const rowSpan = lot.sizes.length;
 
               return lot.sizes.map((size, index) => (
                 <tr key={index}>
                   {index === 0 ? (
-                    <td rowSpan={rowSpan}>{lot.lotNumber}</td> // İlk boyut için lot numarasını yaz
+                    <td
+                      rowSpan={rowSpan}
+                      style={{
+                        backgroundColor:
+                          lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                      }}
+                    >
+                      {lot.lotNumber}
+                    </td> // İlk boyut için lot numarasını yaz
                   ) : null}
                   {index === 0 ? (
-                    <td rowSpan={rowSpan}>{lot.productCode}</td> // İlk boyut için ürün kodunu yaz
+                    <td
+                      rowSpan={rowSpan}
+                      style={{
+                        backgroundColor:
+                          lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                      }}
+                    >
+                      {lot.productCode}
+                    </td> // İlk boyut için ürün kodunu yaz
                   ) : null}
                   {index === 0 ? (
-                    <td rowSpan={rowSpan}>{lot.productName}</td> // İlk boyut için ürün adını yaz
+                    <td
+                      rowSpan={rowSpan}
+                      style={{
+                        backgroundColor:
+                          lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                      }}
+                    >
+                      {lot.productName}
+                    </td> // İlk boyut için ürün adını yaz
                   ) : null}
-                  <td>{size.plakaTanim}</td>
-                  <td>{size.plakaOlcu}</td>
-                  <td>{size.plakaAdeti}</td>
-                  <td>{size.lotAdet}</td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {size.plakaTanim}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {size.plakaOlcu}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {size.plakaAdeti}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {size.lotAdet}
+                  </td>
 
                   {/* Cutting operations bilgilerini ekle */}
-                  <td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
                     {size.cuttingOperations &&
                       size.cuttingOperations.map((op, idx) => (
                         <div key={idx}>
-                          <td>{formatDate(op.startDate)}</td>
+                          <td
+                            style={{
+                              backgroundColor:
+                                lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                            }}
+                          >
+                            {" "}
+                            {formatDate(op.startDate)}
+                          </td>
                         </div>
                       ))}
                   </td>
 
-                  <td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
                     {size.cuttingOperations &&
                       size.cuttingOperations.map((op, idx) => (
                         <div key={idx}>
-                          <td>{formatDate(op.endDate)}</td>
+                          <td
+                            style={{
+                              backgroundColor:
+                                lot.lotNumber % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                            }}
+                          >
+                            {formatDate(op.endDate)}
+                          </td>
                         </div>
                       ))}
                   </td>

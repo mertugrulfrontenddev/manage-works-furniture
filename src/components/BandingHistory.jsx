@@ -114,7 +114,7 @@ const BandingHistory = () => {
       <h2 className="bg-primary text-white p-2 fw-light">Bantlama Geçmişi</h2>
       <table className="table table-bordered" style={{ fontSize: "13px" }}>
         <thead>
-          <tr className="bg-primary">
+          <tr>
             <th>Lot No</th>
             <th>Ürün Adı</th>
             <th>Ürün Kodu</th>
@@ -124,29 +124,79 @@ const BandingHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {bandingLots.map((lot) => {
+          {bandingLots.map((lot, lotIndex) => {
             const rowSpan = lot.parts.length; // Lot'a ait toplam parça sayısını alıyoruz
 
+            // Tek satırları gri, çift satırları beyaz yap
+
             return lot.parts.map((part, index) => {
-              // Eğer part.operations dizisi varsa, işlemi al
               const op =
                 part.operations && part.operations.length > 0
                   ? part.operations[0]
                   : null;
+              const rowIndex = lotIndex + index;
 
               return (
-                <tr key={`${part.id}-${op ? op.id : "no-op"}`}>
+                <tr
+                  key={`${part.id}-${op ? op.id : "no-op"}`}
+                  className={rowIndex % 2 === 0 ? "bg-light" : ""}
+                >
                   {index === 0 ? (
                     <>
-                      <td rowSpan={rowSpan}>{lot.lotNumber}</td>
-                      <td rowSpan={rowSpan}>{lot.productName}</td>
-                      <td rowSpan={rowSpan}>{lot.productCode}</td>
+                      <td
+                        rowSpan={rowSpan}
+                        style={{
+                          backgroundColor:
+                            lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                        }}
+                      >
+                        {lot.lotNumber}
+                      </td>
+                      <td
+                        rowSpan={rowSpan}
+                        style={{
+                          backgroundColor:
+                            lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                        }}
+                      >
+                        {lot.productName}
+                      </td>
+                      <td
+                        rowSpan={rowSpan}
+                        style={{
+                          backgroundColor:
+                            lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                        }}
+                      >
+                        {lot.productCode}
+                      </td>
                     </>
                   ) : null}
 
-                  <td>{part.cinsi}</td>
-                  <td>{formatDate(op?.startTime)}</td>
-                  <td>{formatDate(op?.endTime)}</td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {part.cinsi}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {formatDate(op?.startTime)}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {formatDate(op?.endTime)}
+                  </td>
                 </tr>
               );
             });
