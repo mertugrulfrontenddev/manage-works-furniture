@@ -225,7 +225,8 @@ function SizingList() {
   }, []);
   return (
     <div style={{ maxWidth: "90%", margin: "0 auto" }}>
-      <h2>Toplam Ebatlanan Lot Sayısı: {sizingData.length}</h2>
+      <h3 className="bg-primary text-white p-2 fw-light">Ebatlama Sayfası</h3>
+      <h4>Toplam Ebatlanan Lot Sayısı: {sizingData.length}</h4>
       {sizingData.length === 0 ? (
         <p>No sizing data available for active orders.</p>
       ) : (

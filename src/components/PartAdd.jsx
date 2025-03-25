@@ -197,14 +197,21 @@ const AddPartForm = () => {
           </Col>
           <Col md={6}>
             <Form.Group>
-              <Form.Label>Kalınlık</Form.Label>
+              <Form.Label>Kalınlık)</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="thickness"
                 value={part.thickness}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Seçiniz</option>
+                <option value="3">3</option>
+                <option value="8">8</option>
+                <option value="12">12</option>
+                <option value="18">18</option>
+              </Form.Control>
             </Form.Group>
+
             <Form.Group>
               <Form.Label>Birim Adedi</Form.Label>
               <Form.Control

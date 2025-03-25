@@ -161,7 +161,7 @@ function Navigation() {
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/banding">
+                  <Link className="dropdown-item" to="/bandinghistory">
                     Bantlama Geçmişi
                   </Link>
                 </li>

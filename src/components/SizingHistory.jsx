@@ -107,6 +107,7 @@ const SizingHistory = () => {
 
   return (
     <div className="container my-4">
+      <h2 className="bg-primary text-white p-2 fw-light"> Ebatlama Geçmişi</h2>
       {activeLots.length === 0 ? (
         <div className="alert alert-warning" role="alert">
           Geçmişte Yapılmış Ebatlama Bilgisi Bulunamadı!!!
@@ -115,9 +116,9 @@ const SizingHistory = () => {
         <table className="table table-bordered " style={{ fontSize: "13px" }}>
           <thead>
             <tr>
-              <th>Lot Number</th>
-              <th>Product Code</th>
-              <th>Product Name</th>
+              <th>Lot No</th>
+              <th>Ürün Kodu</th>
+              <th>Ürün Adı</th>
               <th>Plaka Tanım</th>
               <th>Plaka Ölçüsü</th>
               <th>Plaka Adeti</th>

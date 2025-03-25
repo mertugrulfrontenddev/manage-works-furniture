@@ -141,3 +141,14 @@
     table-layout: auto; /* Tabloyu daha esnek hale getiriyoruz */
   }
 }
+
+th {
+  background-color: #007bff !important; /* Tüm th'lere aynı renk */
+  color: white !important;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+th:nth-child(1) {
+  width: 60px;
+}

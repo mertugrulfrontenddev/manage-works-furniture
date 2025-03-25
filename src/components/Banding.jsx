@@ -225,7 +225,9 @@ const Banding = () => {
   }, []);
   return (
     <div className="container mt-4">
-      <h3 style={{ fontSize: "18px" }}>Ürünler ve Parçalar (Bantlama)</h3>
+      <h3 className="bg-primary text-white p-2 fw-light">
+        Ürünler ve Parçalar (Bantlama)
+      </h3>
 
       {/* Filter for banding type */}
       <div className="mb-3">
