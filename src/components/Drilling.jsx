@@ -264,7 +264,7 @@ const Drilling = () => {
                           <td>{part.materialColor || "No Value"}</td>
                           <td>{part.thickness || "No Value"}</td>
                           <td>{part.unitCount || "No Value"}</td>
-                          <td>{part.totalCount || "No Value"}</td>
+                          <td>{part.unitCount * lot.quantity || "No Value"}</td>
                           <td>{part.pvcColor || "No Value"}</td>
                           <td>{part.drilling || "No Value"}</td>
                           <td>

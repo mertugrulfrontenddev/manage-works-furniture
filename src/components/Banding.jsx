@@ -293,7 +293,7 @@ const Banding = () => {
                           <td>{part.materialColor || "No Value"}</td>
                           <td>{part.thickness || "No Value"}</td>
                           <td>{part.unitCount || "No Value"}</td>
-                          <td>{part.totalCount || "No Value"}</td>
+                          <td>{part.unitCount * lot.quantity || "No Value"}</td>
                           <td>{part.pvcColor || "No Value"}</td>
                           <td>{part.banding || "No Value"}</td>
                           <td>

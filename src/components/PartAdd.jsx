@@ -15,7 +15,7 @@ const AddPartForm = () => {
     cinsi: "",
     thickness: "",
     unitCount: "",
-    totalCount: "",
+
     materialColor: "",
     macmazzeNet: {
       macmazzeLenght: "",
@@ -89,7 +89,6 @@ const AddPartForm = () => {
         cinsi: "",
         thickness: "",
         unitCount: "",
-        totalCount: "",
         materialColor: "",
         macmazzeNet: { macmazzeLenght: "", macmazzeWidth: "" },
         pvcColor: "",
@@ -218,15 +217,6 @@ const AddPartForm = () => {
                 type="number"
                 name="unitCount"
                 value={part.unitCount}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Toplam Adet</Form.Label>
-              <Form.Control
-                type="number"
-                name="totalCount"
-                value={part.totalCount}
                 onChange={handleChange}
               />
             </Form.Group>
