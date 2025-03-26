@@ -113,7 +113,7 @@ function PartDetails() {
                           </p>
                           <p>
                             <strong>Toplam Adet:</strong>{" "}
-                            {part.totalCount || "No Value"}
+                            {part.unitCount * lot.quantity || "No Value"}
                           </p>
                         </Col>
                         <Col md={4}>
