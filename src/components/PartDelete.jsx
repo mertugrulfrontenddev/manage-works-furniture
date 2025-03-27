@@ -98,7 +98,7 @@ const PartDelete = () => {
 
   return (
     <div>
-      <h1>Bir ürün Seçiniz</h1>
+      <h2>Parça Silme Sayfası</h2>
       <Row className="d-flex align-items-center justify-content-center">
         <Col md={6}>
           <Form.Group controlId="productSelect">
