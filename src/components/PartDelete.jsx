@@ -112,8 +112,8 @@ const PartDelete = () => {
 
               {products.map((product) => (
                 <option value={product.code} key={product.code}>
-                  {product.code} - {product.name}-Parça Sayısı
-                  {productPartsCount[product.code]}
+                  {product.code} - {product.name}-Parça Sayısı(
+                  {productPartsCount[product.code]})
                 </option>
               ))}
             </Form.Control>
