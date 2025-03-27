@@ -112,7 +112,7 @@ const PartDelete = () => {
 
               {products.map((product) => (
                 <option value={product.code} key={product.code}>
-                  {product.code} - {product.name}-
+                  {product.code} - {product.name}-Parça Sayısı
                   {productPartsCount[product.code]}
                 </option>
               ))}
