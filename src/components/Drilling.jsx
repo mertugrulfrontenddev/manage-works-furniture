@@ -65,6 +65,7 @@ const Drilling = () => {
       partId,
       startTime,
       delmeEnd: false,
+      operationKey: lotNumber + "-" + partId + "-delme",
       type: "delme",
       timestamp: new Date(),
     });

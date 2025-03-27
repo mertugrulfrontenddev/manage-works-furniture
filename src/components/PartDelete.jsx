@@ -11,10 +11,33 @@ const PartDelete = () => {
   const [productParts, setProductParts] = useState([]); // parts'ı tutacağımız state
   const [modalShow, setModelShow] = useState(false);
   const [selectedPart, setSelectedPart] = useState(null);
+
+  const [productPartsCount, setProductPartsCount] = useState({});
   const handleProductSelect = (e) => {
     const selectedValue = e.target.value;
     setSelectedProductCode(selectedValue);
   };
+
+  useEffect(() => {
+    const fetchProductPartsCount = async () => {
+      try {
+        const partsCounts = {};
+
+        // Tüm ürünleri dolaşıp her birinin parça sayısını alacağız
+        for (const product of products) {
+          const partsRef = collection(db, "products", product.code, "parts");
+          const partsSnapshot = await getDocs(partsRef);
+          partsCounts[product.code] = partsSnapshot.size; // Parça sayısını objeye ekliyoruz
+        }
+
+        setProductPartsCount(partsCounts); // Tüm ürünlerin parça sayısını state'e atıyoruz
+      } catch (error) {
+        console.log("Parça sayıları alınırken hata oluştu:", error);
+      }
+    };
+
+    fetchProductPartsCount();
+  }, [products]); // products değiştiğinde tetiklenecek
 
   useEffect(() => {
     const fetchSelectedProduct = async () => {
@@ -89,7 +112,8 @@ const PartDelete = () => {
 
               {products.map((product) => (
                 <option value={product.code} key={product.code}>
-                  {product.code} - {product.name}
+                  {product.code} - {product.name}-
+                  {productPartsCount[product.code]}
                 </option>
               ))}
             </Form.Control>

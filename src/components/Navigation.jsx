@@ -166,7 +166,7 @@ function Navigation() {
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/drilling">
+                  <Link className="dropdown-item" to="/drillinghistory">
                     Delik Geçmişi
                   </Link>
                 </li>
