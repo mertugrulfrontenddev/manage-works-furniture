@@ -23,21 +23,25 @@ const PartDelete = () => {
       try {
         const partsCounts = {};
 
-        // Tüm ürünleri dolaşıp her birinin parça sayısını alacağız
-        for (const product of products) {
+        // Tüm ürünler için parçaları paralel olarak alacak istekleri hazırlıyoruz
+        const partsPromises = products.map(async (product) => {
           const partsRef = collection(db, "products", product.code, "parts");
           const partsSnapshot = await getDocs(partsRef);
           partsCounts[product.code] = partsSnapshot.size; // Parça sayısını objeye ekliyoruz
-        }
+        });
 
-        setProductPartsCount(partsCounts); // Tüm ürünlerin parça sayısını state'e atıyoruz
+        // Promise.all ile tüm parçaları paralel olarak çekiyoruz
+        await Promise.all(partsPromises);
+
+        setProductPartsCount(partsCounts); // Parça sayıları state'e atıyoruz
       } catch (error) {
         console.log("Parça sayıları alınırken hata oluştu:", error);
       }
     };
 
     fetchProductPartsCount();
-  }, [products]); // products değiştiğinde tetiklenecek
+  }, [products]);
+  // products değiştiğinde tetiklenecek
 
   useEffect(() => {
     const fetchSelectedProduct = async () => {
