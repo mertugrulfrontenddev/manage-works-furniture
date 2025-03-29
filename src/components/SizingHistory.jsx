@@ -2,90 +2,95 @@ import { useContext, useEffect, useState } from "react";
 import { LotContext } from "../context/LotContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import LoadingSpinner from "./LoadingSpinner";
 
 const SizingHistory = () => {
   const { products } = useContext(LotContext);
   const [activeLots, setActiveLots] = useState([]); // Active lots için state
+  const [Loading, setLoading] = useState(true);
 
   const fetchActiveLots = async () => {
-    const lotsQuery = query(
-      collection(db, "lots"),
-      where("status", "==", "Üretimde")
-    );
+    try {
+      const lotsQuery = query(
+        collection(db, "lots"),
+        where("status", "==", "Üretimde")
+      );
 
-    const lotsSnapshot = await getDocs(lotsQuery);
-    const activeLots = lotsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+      const lotsSnapshot = await getDocs(lotsQuery);
+      const activeLots = lotsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    // 1. Adım: Ürün kodlarına göre aktif lotları filtrele
-    const matchedLots = activeLots.filter((lot) =>
-      products.some((product) => product.code === lot.productCode)
-    );
+      // 1. Adım: Ürün kodlarına göre aktif lotları filtrele
+      const matchedLots = activeLots.filter((lot) =>
+        products.some((product) => product.code === lot.productCode)
+      );
 
-    // 2. Adım: Filtrelenmiş lotlarla boyut bilgilerini al ve cutting_operations ekle
-    const activelotsWithSizes = await Promise.all(
-      matchedLots.map(async (lot) => {
-        const sizeCollection = collection(
-          db,
-          `products/${lot.productCode}/size`
-        );
-        const sizeSnap = await getDocs(sizeCollection);
-        const sizeList = sizeSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+      // 2. Adım: Filtrelenmiş lotlarla boyut bilgilerini al ve cutting_operations ekle
+      const activelotsWithSizes = await Promise.all(
+        matchedLots.map(async (lot) => {
+          const sizeCollection = collection(
+            db,
+            `products/${lot.productCode}/size`
+          );
+          const sizeSnap = await getDocs(sizeCollection);
+          const sizeList = sizeSnap.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
 
-        // 3. Adım: Cutting operations ile ilişkili verileri alalım
-        const activelotWithCuttingOps = await Promise.all(
-          sizeList.map(async (size) => {
-            // Cutting operations'ları yalnızca doğru boyutlar için çek
-            const lotPlakaKey = `${lot.lotNumber}-${size.plakaTanim}`;
+          // 3. Adım: Cutting operations ile ilişkili verileri alalım
+          const activelotWithCuttingOps = await Promise.all(
+            sizeList.map(async (size) => {
+              // Cutting operations'ları yalnızca doğru boyutlar için çek
+              const lotPlakaKey = `${lot.lotNumber}-${size.plakaTanim}`;
 
-            // cutting_operations koleksiyonundaki verileri çek
-            const cuttingOpsQuery = query(
-              collection(db, "cutting_operations"),
-              where("lotPlakaKey", "==", lotPlakaKey),
-              where("plakaTanim", "==", size.plakaTanim), // plakaTanim'e göre eşleşme yapalım
-              where("lotAdet", "==", size.lotAdet),
-              where("ebatlamaTamamlandi", "==", true) // lotAdet'e göre eşleşme yapalım
-            );
-            const cuttingOpsSnapshot = await getDocs(cuttingOpsQuery);
-            const cuttingOpsList = cuttingOpsSnapshot.docs.map((doc) =>
-              doc.data()
-            );
+              // cutting_operations koleksiyonundaki verileri çek
+              const cuttingOpsQuery = query(
+                collection(db, "cutting_operations"),
+                where("lotPlakaKey", "==", lotPlakaKey),
+                where("plakaTanim", "==", size.plakaTanim), // plakaTanim'e göre eşleşme yapalım
+                where("lotAdet", "==", size.lotAdet),
+                where("ebatlamaTamamlandi", "==", true) // lotAdet'e göre eşleşme yapalım
+              );
+              const cuttingOpsSnapshot = await getDocs(cuttingOpsQuery);
+              const cuttingOpsList = cuttingOpsSnapshot.docs.map((doc) =>
+                doc.data()
+              );
 
-            // Eğer cutting_operations yoksa, bu boyutu göstermeyecek şekilde ayarlayacağız
-            if (cuttingOpsList.length === 0) {
-              return null; // Eğer cutting_operations yoksa, bu boyut verisini eklemeyeceğiz
-            }
+              // Eğer cutting_operations yoksa, bu boyutu göstermeyecek şekilde ayarlayacağız
+              if (cuttingOpsList.length === 0) {
+                return null; // Eğer cutting_operations yoksa, bu boyut verisini eklemeyeceğiz
+              }
 
-            return {
-              ...size,
-              cuttingOperations: cuttingOpsList, // cutting_operations'ları boyuta ekle
-            };
-          })
-        );
+              return {
+                ...size,
+                cuttingOperations: cuttingOpsList, // cutting_operations'ları boyuta ekle
+              };
+            })
+          );
 
-        // null olanları filtrele (cutting_operations olmayan boyutları)
-        const filteredSizes = activelotWithCuttingOps.filter(
-          (size) => size !== null
-        );
+          // null olanları filtrele (cutting_operations olmayan boyutları)
+          const filteredSizes = activelotWithCuttingOps.filter(
+            (size) => size !== null
+          );
 
-        return {
-          ...lot,
-          sizes: filteredSizes, // Sadece cutting_operations'ları olan boyutları ekle
-        };
-      })
-    );
+          return {
+            ...lot,
+            sizes: filteredSizes, // Sadece cutting_operations'ları olan boyutları ekle
+          };
+        })
+      );
 
-    activelotsWithSizes.sort((a, b) => {
-      if (a.lotNumber < b.lotNumber) return -1;
-      if (a.lotNumber > b.lotNumber) return 1;
-      return 0;
-    });
-    setActiveLots(activelotsWithSizes); // Sonuçları state'e aktar
+      activelotsWithSizes.sort((a, b) => {
+        if (a.lotNumber < b.lotNumber) return -1;
+        if (a.lotNumber > b.lotNumber) return 1;
+        return 0;
+      });
+      setActiveLots(activelotsWithSizes); // Sonuçları state'e aktar
+      setLoading(false);
+    } catch (error) {}
   };
 
   // Tarih formatlama fonksiyonu
@@ -108,7 +113,9 @@ const SizingHistory = () => {
   return (
     <div className="container my-4">
       <h2 className="bg-primary text-white p-2 fw-light"> Ebatlama Geçmişi</h2>
-      {activeLots.length === 0 ? (
+      {Loading ? (
+        <LoadingSpinner />
+      ) : activeLots.length === 0 ? (
         <div className="alert alert-warning" role="alert">
           Geçmişte Yapılmış Ebatlama Bilgisi Bulunamadı!!!
         </div>
