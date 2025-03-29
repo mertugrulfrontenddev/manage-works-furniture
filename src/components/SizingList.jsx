@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { LotContext } from "../context/LotContext";
+import LoadingSpinner from "./LoadingSpinner";
 
 function SizingList() {
   const { products } = useContext(LotContext);
@@ -20,7 +21,7 @@ function SizingList() {
   const [activeProductCodes, setActiveProductCodes] = useState([]);
   const [activeLotDetails, setActiveLotDetails] = useState([]);
   const [dates, setDates] = useState({});
-
+  const [Loading, setLoading] = useState(true);
   // Fetch active lot orders
   useEffect(() => {
     const fetchActiveLotOrders = async () => {
@@ -94,6 +95,7 @@ function SizingList() {
         allSizingData.sort((a, b) => a.lotNumber - b.lotNumber);
 
         setSizingData(allSizingData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching sizing data:", error);
       }
@@ -227,7 +229,9 @@ function SizingList() {
     <div style={{ maxWidth: "90%", margin: "0 auto" }}>
       <h3 className="bg-primary text-white p-2 fw-light">Ebatlama Sayfası</h3>
       <h4>Toplam Ebatlanan Lot Sayısı: {sizingData.length}</h4>
-      {sizingData.length === 0 ? (
+      {Loading ? (
+        <LoadingSpinner />
+      ) : sizingData.length === 0 ? (
         <p>No sizing data available for active orders.</p>
       ) : (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>

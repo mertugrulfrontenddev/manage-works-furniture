@@ -202,6 +202,7 @@ const AddPartForm = () => {
                 name="thickness"
                 value={part.thickness}
                 onChange={handleChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="3">3</option>
@@ -218,6 +219,7 @@ const AddPartForm = () => {
                 name="unitCount"
                 value={part.unitCount}
                 onChange={handleChange}
+                required
               />
             </Form.Group>
           </Col>
@@ -232,6 +234,7 @@ const AddPartForm = () => {
                 name="materialColor"
                 value={part.materialColor}
                 onChange={handleChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="18 MM ATLANTİK ÇAM">
@@ -256,6 +259,7 @@ const AddPartForm = () => {
                 name="pvcColor"
                 value={part.pvcColor}
                 onChange={handleChange}
+                required
               >
                 <option value="">Pvc Rengi Seçiniz</option>
                 <option value="ATLANTİK ÇAM">ATLANTİK ÇAM</option>{" "}
@@ -277,6 +281,7 @@ const AddPartForm = () => {
                     name="macmazzeLenght"
                     value={part.macmazzeNet.macmazzeLenght}
                     onChange={(e) => handleNestedChange(e, "macmazzeNet")}
+                    required
                   />
                 </Col>
                 <Col>
@@ -286,6 +291,7 @@ const AddPartForm = () => {
                     name="macmazzeWidth"
                     value={part.macmazzeNet.macmazzeWidth}
                     onChange={(e) => handleNestedChange(e, "macmazzeNet")}
+                    required
                   />
                 </Col>
               </Row>
@@ -299,6 +305,7 @@ const AddPartForm = () => {
                     name="channel"
                     value={part.channel}
                     onChange={handleChange}
+                    required
                   >
                     <option value="">Kanal Boyu Seçiniz</option>
                     <option value="Tam Kanal">Tam Kanal</option>
@@ -317,12 +324,14 @@ const AddPartForm = () => {
                 name="drilling"
                 value={part.drilling}
                 onChange={handleChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="7kafa">7kafa</option>
                 <option value="Nanxing 1">Nanxing 1</option>
                 <option value="Nanxing 2">Nanxing 2</option>
                 <option value="Uniteam">Uniteam</option>
+                <option value="Delik Yok">Delik Yok</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -332,11 +341,13 @@ const AddPartForm = () => {
                 name="banding"
                 value={part.banding}
                 onChange={handleChange}
+                required
               >
                 <option value="">Seçiniz</option>
-                <option value="K Bandlama">K Bandlama</option>
-                <option value="B Bandlama">B Bandlama</option>
+                <option value="K Bantlama">K Bantlama</option>
+                <option value="B Bantlama">B Bantlama</option>
                 <option value="E Kenar">E Kenar</option>
+                <option value="Bantlama Yok">Bantlama Yok</option>
               </Form.Control>
             </Form.Group>
 
@@ -347,6 +358,7 @@ const AddPartForm = () => {
                 name="boy1"
                 value={part.edgeBanding.boy1}
                 onChange={handleEdgeBandingChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="0.4">0.4</option>
@@ -361,6 +373,7 @@ const AddPartForm = () => {
                 name="boy2"
                 value={part.edgeBanding.boy2}
                 onChange={handleEdgeBandingChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="0.4">0.4</option>
@@ -375,6 +388,7 @@ const AddPartForm = () => {
                 name="en1"
                 value={part.edgeBanding.en1}
                 onChange={handleEdgeBandingChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="0.4">0.4</option>
@@ -389,6 +403,7 @@ const AddPartForm = () => {
                 name="en2"
                 value={part.edgeBanding.en2}
                 onChange={handleEdgeBandingChange}
+                required
               >
                 <option value="">Seçiniz</option>
                 <option value="0.4">0.4</option>
@@ -410,6 +425,7 @@ const AddPartForm = () => {
                     name="length"
                     value={part.partSize.length}
                     onChange={(e) => handleNestedChange(e, "partSize")}
+                    required
                   />
                 </Col>
                 <Col>
@@ -419,6 +435,7 @@ const AddPartForm = () => {
                     name="width"
                     value={part.partSize.width}
                     onChange={(e) => handleNestedChange(e, "partSize")}
+                    required
                   />
                 </Col>
               </Row>
@@ -436,6 +453,7 @@ const AddPartForm = () => {
                 name="notes"
                 value={part.notes}
                 onChange={handleChange}
+                required
               />
             </Form.Group>
           </Col>
