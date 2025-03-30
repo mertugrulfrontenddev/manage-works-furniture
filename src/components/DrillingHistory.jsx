@@ -120,6 +120,7 @@ const DrillingHistory = () => {
             <th>Ürün Adı</th>
             <th>Ürün Kodu</th>
             <th>Part Cinsi</th>
+            <th>Delik</th>
             <th>Başlama</th>
             <th>Bitiş</th>
           </tr>
@@ -181,6 +182,14 @@ const DrillingHistory = () => {
                     }}
                   >
                     {part.cinsi}
+                  </td>
+                  <td
+                    style={{
+                      backgroundColor:
+                        lotIndex % 2 === 0 ? "#f8f9fa" : "#ffffff",
+                    }}
+                  >
+                    {part.drilling}
                   </td>
                   <td
                     style={{
