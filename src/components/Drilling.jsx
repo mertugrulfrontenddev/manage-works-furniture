@@ -126,7 +126,12 @@ const Drilling = () => {
             db,
             `products/${product.code}/parts`
           );
-          const partSnapshot = await getDocs(partsCollection);
+
+          const q = query(
+            partsCollection,
+            where("drilling", "!=", "Delme Yok")
+          );
+          const partSnapshot = await getDocs(q);
           const partsList = partSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -252,7 +257,7 @@ const Drilling = () => {
                       .filter((part) =>
                         drillingFilter ? part.drilling === drillingFilter : true
                       ) // Apply the filter here
-                      .map((part, partIndex) => {
+                      .map((part, partIndex, parts) => {
                         const isComplete =
                           operations[`${lot.lotNumber}-${part.id}-delme`]
                             ?.delmeEnd;
@@ -262,16 +267,8 @@ const Drilling = () => {
                               key={`${product.code}-${lotIndex}-${partIndex}`}
                             >
                               <td>{lot.lotNumber || "No Value"}</td>
-                              <td>
-                                {partIndex === 0
-                                  ? product.name || "No Value"
-                                  : ""}
-                              </td>
-                              <td>
-                                {partIndex === 0
-                                  ? product.code || "No Value"
-                                  : ""}
-                              </td>
+                              <td>{product.name}</td>
+                              <td>{product.code}</td>
                               <td>{part.partName || "No Value"}</td>
                               <td>{part.paketNo || "No Value"}</td>
                               <td>{part.cinsi || "No Value"}</td>

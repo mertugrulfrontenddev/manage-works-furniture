@@ -17,28 +17,26 @@ const PartDelete = () => {
     const selectedValue = e.target.value;
     setSelectedProductCode(selectedValue);
   };
+  const fetchProductPartsCount = async () => {
+    try {
+      const partsCounts = {};
 
+      // Tüm ürünler için parçaları paralel olarak alacak istekleri hazırlıyoruz
+      const partsPromises = products.map(async (product) => {
+        const partsRef = collection(db, "products", product.code, "parts");
+        const partsSnapshot = await getDocs(partsRef);
+        partsCounts[product.code] = partsSnapshot.size; // Parça sayısını objeye ekliyoruz
+      });
+
+      // Promise.all ile tüm parçaları paralel olarak çekiyoruz
+      await Promise.all(partsPromises);
+
+      setProductPartsCount(partsCounts); // Parça sayıları state'e atıyoruz
+    } catch (error) {
+      console.log("Parça sayıları alınırken hata oluştu:", error);
+    }
+  };
   useEffect(() => {
-    const fetchProductPartsCount = async () => {
-      try {
-        const partsCounts = {};
-
-        // Tüm ürünler için parçaları paralel olarak alacak istekleri hazırlıyoruz
-        const partsPromises = products.map(async (product) => {
-          const partsRef = collection(db, "products", product.code, "parts");
-          const partsSnapshot = await getDocs(partsRef);
-          partsCounts[product.code] = partsSnapshot.size; // Parça sayısını objeye ekliyoruz
-        });
-
-        // Promise.all ile tüm parçaları paralel olarak çekiyoruz
-        await Promise.all(partsPromises);
-
-        setProductPartsCount(partsCounts); // Parça sayıları state'e atıyoruz
-      } catch (error) {
-        console.log("Parça sayıları alınırken hata oluştu:", error);
-      }
-    };
-
     fetchProductPartsCount();
   }, [products]);
   // products değiştiğinde tetiklenecek
@@ -95,7 +93,7 @@ const PartDelete = () => {
       );
 
       alert("Parça başarıyla silindi.");
-
+      fetchProductPartsCount();
       setModelShow(!modalShow);
     } catch (error) {}
   };

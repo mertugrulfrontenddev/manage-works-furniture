@@ -168,7 +168,12 @@ const Banding = () => {
             db,
             `products/${lot.productCode}/parts`
           );
-          const partSnapshot = await getDocs(partsCollection);
+
+          const q = query(
+            partsCollection,
+            where("banding", "!=", "Bantlama Yok")
+          );
+          const partSnapshot = await getDocs(q);
           const partsList = partSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -271,6 +276,7 @@ const Banding = () => {
                   <th>Toplam Adet</th>
                   <th>PVC Rengi</th>
                   <th>Bantlama</th>
+                  <th>Delme</th>
                   <th>Başlama Zamanı</th>
                   <th>Bitiş Zamanı</th>
                 </tr>
@@ -293,16 +299,8 @@ const Banding = () => {
                             <td>
                               {lot.lotNumber || "No Value"} {}
                             </td>
-                            <td>
-                              {partIndex === 0
-                                ? lot.productName || "No Value"
-                                : ""}
-                            </td>
-                            <td>
-                              {partIndex === 0
-                                ? lot.productCode || "No Value"
-                                : ""}
-                            </td>
+                            <td>{lot.productName}</td>
+                            <td>{lot.productCode}</td>
                             <td>{part.partName || "No Value"} </td>
                             <td>{part.paketNo || "No Value"}</td>
                             <td>{part.cinsi || "No Value"}</td>
@@ -314,6 +312,7 @@ const Banding = () => {
                             </td>
                             <td>{part.pvcColor || "No Value"}</td>
                             <td>{part.banding || "No Value"}</td>
+                            <td>{part.drilling || "No Value"}</td>
                             <td>
                               <input
                                 type="datetime-local"

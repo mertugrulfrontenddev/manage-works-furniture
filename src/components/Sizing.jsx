@@ -3,11 +3,13 @@ import { Form, Row, Col, Container, FormGroup, Button } from "react-bootstrap";
 import { LotContext } from "../context/LotContext";
 import { collection, addDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { FlatTree } from "framer-motion";
+import LoadingSpinner from "./LoadingSpinner";
 
 const Sizing = () => {
   const { products } = useContext(LotContext);
   const [productsWithSizes, setProductsWithSizes] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const fetchSizes = async () => {
     try {
       const sizePromises = products.map(async (product) => {
@@ -29,6 +31,8 @@ const Sizing = () => {
       );
 
       setProductsWithSizes(filteredProducts);
+
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error fetching sizes:", error);
     }
@@ -40,13 +44,12 @@ const Sizing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const productRef = doc(db, "products", dataForm.productCode);
       const sizeCollectionRef = collection(productRef, "size");
 
       await addDoc(sizeCollectionRef, dataForm);
-      alert("Ebat başarıyla eklendi!");
 
       fetchSizes();
 
@@ -60,6 +63,12 @@ const Sizing = () => {
       });
     } catch (error) {
       console.error("Error adding document:", error);
+    } finally {
+      setLoading(false);
+
+      setTimeout(() => {
+        alert("Ebat başarıyla eklendi!");
+      }, 1000);
     }
   };
 
@@ -113,45 +122,49 @@ const Sizing = () => {
 
   return (
     <Container>
-      <Row className="justify-content-center">
-        <Col md={11}>
-          <div className="table-container">
-            <h2 className="bg-primary text-white p-2 fw-light"> Ebatlar</h2>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Ürün Kodu</th>
-                  <th>Ürün Adı</th>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <Row className="justify-content-center">
+          <Col md={11}>
+            <div className="table-container">
+              <h2 className="bg-primary text-white p-2 fw-light"> Ebatlar</h2>
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Ürün Kodu</th>
+                    <th>Ürün Adı</th>
 
-                  <th>Plaka Tanım</th>
-                  <th>Plaka Adeti</th>
-                  <th>Lot Adeti</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productsWithSizes.map((product) =>
-                  product.sizes.length > 0 ? (
-                    product.sizes.map((size, index) => (
-                      <tr key={index}>
-                        <td>{product.code}</td>
-                        <td>{product.name}</td>
+                    <th>Plaka Tanım</th>
+                    <th>Plaka Adeti</th>
+                    <th>Lot Adeti</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productsWithSizes.map((product) =>
+                    product.sizes.length > 0 ? (
+                      product.sizes.map((size, index) => (
+                        <tr key={index}>
+                          <td>{product.code}</td>
+                          <td>{product.name}</td>
 
-                        <td>{size.plakaTanim}</td>
-                        <td>{size.plakaAdeti}</td>
-                        <td>{size.lotAdet}</td>
+                          <td>{size.plakaTanim}</td>
+                          <td>{size.plakaAdeti}</td>
+                          <td>{size.lotAdet}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr key={product.code}>
+                        <td colSpan="4">Boyut bilgisi yok</td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr key={product.code}>
-                      <td colSpan="4">Boyut bilgisi yok</td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Col>
-      </Row>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Col>
+        </Row>
+      )}
 
       <div className="form-container">
         <Form onSubmit={handleSubmit}>
