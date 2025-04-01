@@ -141,6 +141,11 @@ function Navigation() {
                     Delik
                   </Link>
                 </li>
+                <li>
+                  <Link className="dropdown-item" to="/curvebanding">
+                    Eğri Kenar
+                  </Link>
+                </li>
               </ul>
             </li>
             <li className="nav-item dropdown">

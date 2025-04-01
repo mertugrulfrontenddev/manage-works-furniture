@@ -171,7 +171,7 @@ const Banding = () => {
 
           const q = query(
             partsCollection,
-            where("banding", "!=", "Bantlama Yok")
+            where("banding", "not-in", ["Bantlama Yok", "E Kenar"])
           );
           const partSnapshot = await getDocs(q);
           const partsList = partSnapshot.docs.map((doc) => ({
@@ -257,7 +257,6 @@ const Banding = () => {
               <option value="">Seçiniz</option>
               <option value="K Bandlama">K Bandlama</option>
               <option value="B Bandlama">B Bandlama</option>
-              <option value="E Kenar">E Kenar</option>
             </select>
           </div>
           <div className="table-responsive">

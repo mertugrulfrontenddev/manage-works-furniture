@@ -16,6 +16,8 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import SizingHistory from "./components/SizingHistory";
 import BandingHistory from "./components/BandingHistory";
 import DrillingHistory from "./components/DrillingHistory";
+
+import CurveBanding from "./components/CurveBanding";
 function App() {
   return (
     <LotProvider>
@@ -41,6 +43,7 @@ function App() {
           <Route path="/sizinghistory" element={<SizingHistory />} />
           <Route path="/bandinghistory" element={<BandingHistory />} />
           <Route path="/drillinghistory" element={<DrillingHistory />} />
+          <Route path="/curvebanding" element={<CurveBanding />} />
         </Routes>
       </Router>
     </LotProvider>
