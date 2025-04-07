@@ -117,13 +117,15 @@ const BandingHistory = () => {
   }, []);
   return (
     <div className="container">
-      <h2 className="bg-primary text-white p-2 fw-light">Bantlama Geçmişi</h2>
+      <h2 className="bg-primary text-white p-2 fw-light my-4">
+        Bantlama Geçmişi
+      </h2>
 
       {Loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <table className="table table-bordered" style={{ fontSize: "13px" }}>
+          <table className="table table-bordered " style={{ fontSize: "13px" }}>
             <thead>
               <tr>
                 <th>Lot No</th>

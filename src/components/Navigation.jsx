@@ -175,6 +175,11 @@ function Navigation() {
                     Delik Geçmişi
                   </Link>
                 </li>
+                <li>
+                  <Link className="dropdown-item" to="/curvehistory">
+                    Eğri Kenar Geçmişi
+                  </Link>
+                </li>
               </ul>
             </li>
           </ul>

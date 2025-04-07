@@ -14,19 +14,17 @@ import { Table } from "react-bootstrap";
 
 const CurveBanding = () => {
   const [mylots, setMylots] = useState([]);
-
   const [startTimes, setStartTimes] = useState({});
   const [endTimes, setEndTimes] = useState({});
   const [curveOperations, setCurveOperations] = useState({});
+
   const handleChangeStarTime = (lotNumber, partId, value) => {
     const key = `${lotNumber}-${partId}-start`;
-
     setStartTimes((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleChangeEndTime = (lotNumber, partId, value) => {
     const key = `${lotNumber}-${partId}-end`;
-
     setEndTimes((prev) => ({ ...prev, [key]: value }));
   };
 

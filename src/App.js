@@ -18,6 +18,7 @@ import BandingHistory from "./components/BandingHistory";
 import DrillingHistory from "./components/DrillingHistory";
 
 import CurveBanding from "./components/CurveBanding";
+import CurveHistory from "./components/CurveHistory";
 function App() {
   return (
     <LotProvider>
@@ -44,6 +45,7 @@ function App() {
           <Route path="/bandinghistory" element={<BandingHistory />} />
           <Route path="/drillinghistory" element={<DrillingHistory />} />
           <Route path="/curvebanding" element={<CurveBanding />} />
+          <Route path="/curvehistory" element={<CurveHistory />} />
         </Routes>
       </Router>
     </LotProvider>

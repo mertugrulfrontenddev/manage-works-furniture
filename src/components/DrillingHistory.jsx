@@ -117,7 +117,7 @@ const DrillingHistory = () => {
   }, []);
   return (
     <div className="container">
-      <h2 className="bg-primary text-white p-2 fw-light">Delme Geçmişi</h2>
+      <h2 className="bg-primary text-white p-2 fw-light my-4">Delme Geçmişi</h2>
 
       {loading ? (
         <LoadingSpinner />
