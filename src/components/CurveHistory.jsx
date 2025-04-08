@@ -4,6 +4,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { Container } from "react-bootstrap";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportToExcel from "./ExportToExcel";
 
 const CurveHistory = () => {
   const [fetchedCurve, setFetchedCurve] = useState([]);
@@ -100,31 +101,6 @@ const CurveHistory = () => {
     return `${day}.${month}.${year} ${hours}:${minutes}`;
   };
 
-  const exportToExcel = () => {
-    const rows = [];
-
-    fetchedCurve.forEach((lot) => {
-      lot.parts.forEach((part) => {
-        rows.push({
-          "Lot No": lot.lotNumber,
-          "Ürün Adı": lot.productName,
-          "Ürün Kodu": lot.productCode,
-          Cinsi: part.cinsi,
-          Başlama: formatDate(part.operations[0]?.startTime),
-          Bitiş: formatDate(part.operations[0]?.endTime),
-        });
-      });
-    });
-
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Eğri Kenar");
-
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const file = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(file, "egri-kenar-gecmisi.xlsx");
-  };
-
   useEffect(() => {
     fetchCurve();
   }, []);
@@ -134,11 +110,13 @@ const CurveHistory = () => {
       <h2 className="bg-primary text-white p-2 fw-light my-4">
         Eğri Kenar Geçmişi
       </h2>
-
-      <button className="btn btn-success mb-3" onClick={exportToExcel}>
-        Excel'e Aktar 📥
-      </button>
-
+      <div className="d-flex justify-content-end mb-2">
+        <ExportToExcel
+          data={fetchedCurve}
+          fileName="Eğri_Kenar_Geçmişi"
+          sheetName="Sayfa1"
+        />
+      </div>
       <table
         className="table table-bordered table-striped"
         style={{ fontSize: "13px" }}

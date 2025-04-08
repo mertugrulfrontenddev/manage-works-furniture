@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import React, { useContext, useEffect, useState } from "react";
 import { LotContext } from "../context/LotContext";
 import LoadingSpinner from "./LoadingSpinner";
+import ExportToExcel from "./ExportToExcel";
 const BandingHistory = () => {
   const [bandingLots, setBandingLots] = useState([]);
   const [Loading, setLoading] = useState(true);
@@ -125,6 +126,14 @@ const BandingHistory = () => {
         <LoadingSpinner />
       ) : (
         <>
+          <div className="d-flex justify-content-end">
+            <ExportToExcel
+              data={bandingLots}
+              fileName="Bantlama_Geçmişi"
+              sheetName="Sayfa1"
+            />
+          </div>
+
           <table className="table table-bordered " style={{ fontSize: "13px" }}>
             <thead>
               <tr>
