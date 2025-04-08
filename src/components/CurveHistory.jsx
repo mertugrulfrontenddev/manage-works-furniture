@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Container } from "react-bootstrap";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 const CurveHistory = () => {
   const [fetchedCurve, setFetchedCurve] = useState([]);
+
   const fetchCurve = async () => {
-    // we have started getting all active lots
     const myLotsQuery = query(
       collection(db, "lots"),
       where("status", "==", "Üretimde")
@@ -17,8 +20,6 @@ const CurveHistory = () => {
       id: doc.id,
       ...doc.data(),
     }));
-
-    // we have fetched all active lots
 
     const lotsWithParts = await Promise.all(
       myActiveLotsArr.map(async (lot) => {
@@ -56,9 +57,7 @@ const CurveHistory = () => {
 
             const opData = await getDocs(q);
 
-            if (opData.empty) {
-              return null; // Bu parçayı dahil etmiyoruz
-            }
+            if (opData.empty) return null;
 
             const opDataArr = opData.docs.map((doc) => ({
               id: doc.id,
@@ -86,19 +85,44 @@ const CurveHistory = () => {
       if (a.lotNumber > b.lotNumber) return 1;
       return 0;
     });
+
     setFetchedCurve(sortedLots);
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "";
     const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, "0"); // Gün
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Ay (0'dan başladığı için 1 ekliyoruz)
-    const year = date.getFullYear(); // Yıl
-    const hours = String(date.getHours()).padStart(2, "0"); // Saat
-    const minutes = String(date.getMinutes()).padStart(2, "0"); // Dakika
-
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${day}.${month}.${year} ${hours}:${minutes}`;
+  };
+
+  const exportToExcel = () => {
+    const rows = [];
+
+    fetchedCurve.forEach((lot) => {
+      lot.parts.forEach((part) => {
+        rows.push({
+          "Lot No": lot.lotNumber,
+          "Ürün Adı": lot.productName,
+          "Ürün Kodu": lot.productCode,
+          Cinsi: part.cinsi,
+          Başlama: formatDate(part.operations[0]?.startTime),
+          Bitiş: formatDate(part.operations[0]?.endTime),
+        });
+      });
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Eğri Kenar");
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(file, "egri-kenar-gecmisi.xlsx");
   };
 
   useEffect(() => {
@@ -110,8 +134,13 @@ const CurveHistory = () => {
       <h2 className="bg-primary text-white p-2 fw-light my-4">
         Eğri Kenar Geçmişi
       </h2>
+
+      <button className="btn btn-success mb-3" onClick={exportToExcel}>
+        Excel'e Aktar 📥
+      </button>
+
       <table
-        className="table table-bordered table-striped "
+        className="table table-bordered table-striped"
         style={{ fontSize: "13px" }}
       >
         <thead>
@@ -126,8 +155,8 @@ const CurveHistory = () => {
         </thead>
         <tbody>
           {fetchedCurve.map((lot) =>
-            lot.parts.map((part) => (
-              <tr className="table-primary">
+            lot.parts.map((part, i) => (
+              <tr className="table-primary" key={`${lot.lotNumber}-${i}`}>
                 <td>{lot.lotNumber}</td>
                 <td>{lot.productName}</td>
                 <td>{lot.productCode}</td>
