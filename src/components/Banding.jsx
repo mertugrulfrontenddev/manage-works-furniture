@@ -58,10 +58,6 @@ const Banding = () => {
         savedStartTimes[key] = startTime;
         savedEndTimes[key] = endTime;
       }
-      if (type === "delme") {
-        savedStartTimes[`${key}-delme`] = startTime;
-        savedEndTimes[`${key}-delme`] = endTime;
-      }
     });
 
     setStartTimes(savedStartTimes);
@@ -255,8 +251,8 @@ const Banding = () => {
               onChange={(e) => setBandingFilter(e.target.value)}
             >
               <option value="">Seçiniz</option>
-              <option value="K Bandlama">K Bandlama</option>
-              <option value="B Bandlama">B Bandlama</option>
+              <option value="K Bantlama">K Bantlama</option>
+              <option value="B Bantlama">B Bantlama</option>
             </select>
           </div>
           <div className="table-responsive">

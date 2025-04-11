@@ -132,7 +132,7 @@ const Drilling = () => {
 
           const q = query(
             partsCollection,
-            where("drilling", "!=", "Delme Yok")
+            where("drilling", "!=", "Delik Yok")
           );
           const partSnapshot = await getDocs(q);
           const partsList = partSnapshot.docs.map((doc) => ({
@@ -149,16 +149,18 @@ const Drilling = () => {
           // 6. Her lotu, her parça ile eşleştir ve operationsData ile karşılaştır
           const partsWithLot = partsList
             .filter((part) => {
-              // operations koleksiyonundaki ilgili lotNumber ve partId'leri bul
               const matchedOperations = operationsData.filter(
                 (operation) =>
                   operation.lotNumber === lot.lotNumber &&
                   operation.partId === part.id
               );
 
-              // Eğer eşleşen operation varsa, işlemi dahil et
-              return matchedOperations.length > 0;
+              const bandingSkipped =
+                part.banding === "E Kenar" || part.banding === "Bantlama Yok";
+
+              return matchedOperations.length > 0 || bandingSkipped;
             })
+
             .map((part) => ({
               ...part,
               lotNumber: lot.lotNumber,
@@ -254,9 +256,13 @@ const Drilling = () => {
               <tbody>
                 {productsWithLots.map((lot, lotIndex) =>
                   lot.parts
-                    .filter((part) =>
-                      drillingFilter ? part.drilling === drillingFilter : true
-                    ) // Apply the filter here
+                    .filter((part) => {
+                      const matchesDrilling = drillingFilter
+                        ? part.drilling === drillingFilter
+                        : true;
+
+                      return matchesDrilling;
+                    })
                     .map((part, partIndex) => {
                       const isComplete =
                         operations[`${lot.lotNumber}-${part.id}-delme`]
