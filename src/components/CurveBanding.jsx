@@ -86,14 +86,10 @@ const CurveBanding = () => {
 
     //sadece operasyonlardaki lotnumaralarıyla eşleşenleri alacağız
 
-    const activeLotsInOperations = activeLotsArr.filter((lot) =>
-      myOperationsArr.some((op) => op.lotNumber === lot.lotNumber)
-    );
-
     //matching lots with their parts according to productCode  query with firebase
 
     const myactiveLotsParts = await Promise.all(
-      activeLotsInOperations.map(async (lot) => {
+      activeLotsArr.map(async (lot) => {
         const myPartQuery = query(
           collection(db, "products", lot.productCode, "parts"),
           where("banding", "==", "E Kenar")
@@ -102,12 +98,22 @@ const CurveBanding = () => {
         const snapShot = await getDocs(myPartQuery);
 
         if (!snapShot.empty) {
-          const myDataWithParts = snapShot.docs.map((doc) => ({
+          const partsList = snapShot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
 
-          return { ...lot, parts: myDataWithParts };
+          const filteredParts = partsList.filter((part) => {
+            const hasMatchingOp = myOperationsArr.some(
+              (operation) =>
+                operation.lotNumber === lot.lotNumber &&
+                operation.partId === part.id
+            );
+
+            return hasMatchingOp || part.drilling === "Delik Yok";
+          });
+
+          return { ...lot, parts: filteredParts };
         }
 
         return { ...lot, parts: [] };
@@ -116,24 +122,7 @@ const CurveBanding = () => {
 
     //end
 
-    const myactiveLotsPartsWithOp = await Promise.all(
-      myactiveLotsParts.map(async (lot) => {
-        const partsWithOperations = await Promise.all(
-          lot.parts.map((part) => {
-            const opKey = lot.lotNumber + "-" + part.id + "-delme";
-            console.log(opKey);
-            const matchingOps = myOperationsArr.filter(
-              (myOp) => myOp.operationKey === opKey
-            );
-
-            return { ...part, operations: matchingOps };
-          })
-        );
-        return { ...lot, parts: partsWithOperations };
-      })
-    );
-
-    const sortedLots = myactiveLotsPartsWithOp.sort((a, b) => {
+    const sortedLots = myactiveLotsParts.sort((a, b) => {
       if (a.lotNumber < b.lotNumber) return -1;
       if (a.lotNumber > b.lotNumber) return 1;
       return 0;
