@@ -316,7 +316,6 @@ const AddPartForm = () => {
                       name="channel"
                       value={part.channel}
                       onChange={handleChange}
-                      required
                     >
                       <option value="">Kanal Boyu Seçiniz</option>
                       <option value="Tam Kanal">Tam Kanal</option>
@@ -369,7 +368,6 @@ const AddPartForm = () => {
                   name="boy1"
                   value={part.edgeBanding.boy1}
                   onChange={handleEdgeBandingChange}
-                  required
                 >
                   <option value="">Seçiniz</option>
                   <option value="0.4">0.4</option>
@@ -384,7 +382,6 @@ const AddPartForm = () => {
                   name="boy2"
                   value={part.edgeBanding.boy2}
                   onChange={handleEdgeBandingChange}
-                  required
                 >
                   <option value="">Seçiniz</option>
                   <option value="0.4">0.4</option>
@@ -399,7 +396,6 @@ const AddPartForm = () => {
                   name="en1"
                   value={part.edgeBanding.en1}
                   onChange={handleEdgeBandingChange}
-                  required
                 >
                   <option value="">Seçiniz</option>
                   <option value="0.4">0.4</option>
@@ -414,7 +410,6 @@ const AddPartForm = () => {
                   name="en2"
                   value={part.edgeBanding.en2}
                   onChange={handleEdgeBandingChange}
-                  required
                 >
                   <option value="">Seçiniz</option>
                   <option value="0.4">0.4</option>
@@ -464,7 +459,6 @@ const AddPartForm = () => {
                   name="notes"
                   value={part.notes}
                   onChange={handleChange}
-                  required
                 />
               </Form.Group>
             </Col>
