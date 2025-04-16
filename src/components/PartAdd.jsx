@@ -278,6 +278,7 @@ const AddPartForm = () => {
                   <option value="AKÇA AĞAÇ">AKÇA AĞAÇ</option>
                   <option value="BAROK CEVİZ">BAROK CEVİZ</option>
                   <option value="WOOD BEYAZ">WOOD BEYAZ</option>
+                  <option value="PARLAK BEYAZ">PARLAK BEYAZ</option>
                 </Form.Control>
               </Form.Group>
 
