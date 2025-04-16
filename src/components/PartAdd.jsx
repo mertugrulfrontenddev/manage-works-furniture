@@ -270,7 +270,6 @@ const AddPartForm = () => {
                   name="pvcColor"
                   value={part.pvcColor}
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Pvc Rengi Seçiniz</option>
                   <option value="ATLANTİK ÇAM">ATLANTİK ÇAM</option>{" "}
