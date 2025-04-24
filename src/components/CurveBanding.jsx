@@ -208,6 +208,7 @@ const CurveBanding = () => {
                             e.target.value
                           )
                         }
+                        required
                       />
                       <button
                         onClick={() =>

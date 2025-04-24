@@ -3,29 +3,26 @@ import { createContext, useState } from "react";
 export const LotContext = createContext();
 
 export const LotProvider = ({ children }) => {
+  // Lot eklemek için fonksiyon
+  const addLot = (formData) => {
+    const newLot = {
+      lotNumber: formData.lotNumber,
+      productCode: formData.productCode,
+      productName: formData.productName,
+      quantity: formData.quantity,
+      status: formData.status,
+    };
 
-// Lot eklemek için fonksiyon
-const addLot = (formData) => {
-  const newLot = {
-    lotNumber: formData.lotNumber,
-    productCode: formData.productCode,
-    productName: formData.productName,
-    quantity: formData.quantity,
-    status: formData.status
+    setLots((prevLots) => [...prevLots, newLot]);
   };
 
-  setLots((prevLots) => [...prevLots, newLot]);
-};
-
-
-
   function addPart(part, productCode) {
-    setProducts(prevProducts => {
-      return prevProducts.map(product => {
+    setProducts((prevProducts) => {
+      return prevProducts.map((product) => {
         if (product.code === productCode) {
           return {
             ...product,
-            parts: [...(product.parts || []), part]
+            parts: [...(product.parts || []), part],
           };
         }
         return product;
@@ -34,10 +31,26 @@ const addLot = (formData) => {
   }
   const [lots, setLots] = useState([
     // Mevcut iş emirlerini burada tutabiliriz
-   
   ]);
 
   const [products, setProducts] = useState([
+    { code: "SM 201", name: "2 Kapaklı Gardırop Gövde Atlantik" },
+    { code: "SM 202", name: "2 Kapaklı Gardırop Gövde Beyaz" },
+    { code: "SM 203", name: "2 Kapaklı Gardırop Kapak Atlantik" },
+    { code: "SM 204", name: "2 Kapaklı Gardırop Kapak Beyaz" },
+    { code: "SM 205", name: "2 Kapaklı Gardırop Kapak Antrasit" },
+
+    { code: "SM 301", name: "3 Kapaklı Gardırop Gövde Atlantik" },
+    { code: "SM 302", name: "3 Kapaklı Gardırop Gövde Beyaz" },
+    { code: "SM 303", name: "3 Kapaklı Gardırop Kapak Atlantik" },
+    { code: "SM 304", name: "3 Kapaklı Gardırop Kapak Beyaz" },
+    { code: "SM 305", name: "3 Kapaklı Gardırop Kapak Antrasit" },
+
+    { code: "SM 401", name: "4 Kapaklı Gardırop Gövde Atlantik" },
+    { code: "SM 402", name: "4 Kapaklı Gardırop Gövde Beyaz" },
+    { code: "SM 403", name: "4 Kapaklı Gardırop Kapak Atlantik" },
+    { code: "SM 404", name: "4 Kapaklı Gardırop Kapak Beyaz" },
+    { code: "SM 405", name: "4 Kapaklı Gardırop Kapak Antrasit" },
     { code: "152.01.0000141", name: "İKİ KAPILI KİLER ATLANTİK-BEYAZ" },
     { code: "152.01.0000143", name: "İKİ KAPILI KİLER ATLANTİK" },
     { code: "152.01.0000142", name: "İKİ KAPILI KİLER BEYAZ" },
@@ -57,6 +70,7 @@ const addLot = (formData) => {
     { code: "152.01.0000630", name: "A-53 AYAKKABILIK ATLANTİK - BEYAZ" },
     { code: "152.01.0000634", name: "A-54 AYAKKABILIK ATLANTİK - BEYAZ" },
     { code: "152.01.0000642", name: "A-57 AYAKKABILIK ATLANTİK - BEYAZ" },
+
     { code: "151.02.0000001", name: "DEMONTE DOLAP" },
     { code: "151.02.0000002", name: "DEMONTE DOLAP" },
     { code: "151.02.0000003", name: "DEMONTE DOLAP" },
@@ -122,10 +136,8 @@ const addLot = (formData) => {
     { code: "151.02.0000063", name: "DEMONTE DOLAP" },
     { code: "151.02.0000064", name: "DEMONTE DOLAP" },
     { code: "151.02.0000065", name: "DEMONTE DOLAP" },
-    { code: "151.02.0000066", name: "DEMONTE DOLAP" }
+    { code: "151.02.0000066", name: "DEMONTE DOLAP" },
   ]);
-
-  
 
   // Product eklemek için fonksiyon
   const addProduct = (newProduct) => {
@@ -133,7 +145,17 @@ const addLot = (formData) => {
   };
 
   return (
-    <LotContext.Provider value={{ lots, setLots, addLot,addPart, products, setProducts, addProduct }}>
+    <LotContext.Provider
+      value={{
+        lots,
+        setLots,
+        addLot,
+        addPart,
+        products,
+        setProducts,
+        addProduct,
+      }}
+    >
       {children}
     </LotContext.Provider>
   );

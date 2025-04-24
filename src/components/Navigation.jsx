@@ -92,11 +92,6 @@ function Navigation() {
                     Parça Sil
                   </Link>
                 </li>
-                <li>
-                  <Link className="dropdown-item" to="/partadd">
-                    Ürün Sil
-                  </Link>
-                </li>
               </ul>
             </li>
             {/* İş Emri Listesi */}

@@ -277,6 +277,7 @@ function SizingList() {
                               e.target.value
                             )
                           }
+                          required
                         />
                         <button
                           className="btn btn-primary"

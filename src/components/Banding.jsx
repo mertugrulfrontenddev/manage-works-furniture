@@ -324,6 +324,7 @@ const Banding = () => {
                                     e.target.value
                                   )
                                 }
+                                required
                               />
                               <button
                                 className="btn btn-primary btn-sm mt-1"
